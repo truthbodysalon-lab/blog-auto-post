@@ -230,7 +230,7 @@ export function generateDailyTopics(count = 10) {
     if (usedLifestyles.length >= LIFESTYLES.length) usedLifestyles.length = 0;
 
     const publishHour = [7, 8, 10, 11, 13, 14, 16, 17, 19, 20][i];
-    const publishMinute = [0, 30, 0, 30, 0, 30, 0, 30, 0, 30][i];
+    const publishMinute = Math.floor(Math.random() * 60);
 
     topics.push({
       slot: i + 1,
