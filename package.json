@@ -1,0 +1,28 @@
+{
+  "name": "blog-auto-post",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "post": "node src/main.js",
+    "post:debug": "MODE=debug node src/main.js",
+    "post:dry": "DRY_RUN=true MODE=debug node src/main.js",
+    "batch": "node src/batch.js",
+    "batch:debug": "MODE=debug node src/batch.js",
+    "batch:test2": "POST_COUNT=2 MODE=debug node src/batch.js",
+    "topics": "node -e \"import('./src/topics.js').then(m=>console.log(JSON.stringify(m.generateDailyTopics(10),null,2)))\"",
+    "keywords": "node src/keyword-research.js",
+    "health": "node src/health-check.js",
+    "logs": "node -e \"const fs=require('fs'),d=new Date().toISOString().slice(0,10),p=require('path').resolve('logs',d+'.jsonl');if(fs.existsSync(p)){fs.readFileSync(p,'utf8').split('\\n').filter(Boolean).forEach(l=>{try{const o=JSON.parse(l);console.log(o.time.slice(11,19),'['+o.level+']',o.message)}catch{}});}else console.log('今日のログなし')\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.4.2",
+    "googleapis": "^172.0.0",
+    "playwright": "^1.59.1"
+  }
+}

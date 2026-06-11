@@ -1,0 +1,9 @@
+node_modules/
+.env
+auth.json
+gsc-credentials.json
+posts/
+logs/
+cron.log
+debug-*.png
+*.log
