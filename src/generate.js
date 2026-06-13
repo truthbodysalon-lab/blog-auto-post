@@ -177,7 +177,7 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
     } catch (e) {
       const isRetryable = e.message?.includes('503') || e.message?.includes('429') || e.message?.includes('overloaded');
       if (isRetryable && attempt < 4) {
-        const wait = attempt * 15000;
+        const wait = [8000, 15000, 25000][attempt - 1] || 25000;
         console.log(`⏳ API一時エラー (試行${attempt}/4)、${wait/1000}秒後にリトライ...`);
         await new Promise(r => setTimeout(r, wait));
       } else throw e;

@@ -141,7 +141,7 @@ async function main() {
       if (!fs.existsSync(dir)) fs.mkdirSync(dir);
       const stamp = new Date().toISOString().replace(/[:.]/g, '-');
       fs.writeFileSync(path.join(dir, `slot${topic.slot}-${stamp}.json`), JSON.stringify(article, null, 2));
-      await new Promise(r => setTimeout(r, 4500));
+      await new Promise(r => setTimeout(r, 2000));
     } catch (e) {
       genFailed.push(topic.slot);
       await notifyError(`slot${topic.slot} 記事生成失敗`, { error: e.message });
@@ -179,7 +179,7 @@ async function main() {
           failedTitles.push(article.title);
           writeLog('ERROR', `投稿失敗（リトライ上限）: ${article.title}`);
         }
-        await new Promise(r => setTimeout(r, 8000)); // 投稿間隔: CMS負荷分散
+        await new Promise(r => setTimeout(r, 4000)); // 投稿間隔: CMS負荷分散
       } catch (e) {
         failed++;
         failedTitles.push(article.title);
