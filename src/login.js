@@ -6,10 +6,15 @@ import path from 'path';
 const AUTH_FILE = path.resolve('auth.json');
 
 export async function getBrowserContext() {
-  const browser = await chromium.launch({
+  const launchOptions = {
     headless: process.env.MODE !== 'debug',
     slowMo: process.env.MODE === 'debug' ? 200 : 0,
-  });
+  };
+  // GitHub Actions: apt経由Chromiumのパスを使用（CDNダウンロード不要）
+  if (process.env.CHROMIUM_PATH) {
+    launchOptions.executablePath = process.env.CHROMIUM_PATH;
+  }
+  const browser = await chromium.launch(launchOptions);
 
   const contextOptions = {
     viewport: { width: 1400, height: 900 },
