@@ -1,0 +1,114 @@
+name: Daily Post Audit
+
+# ルール: 1日10本投稿を必ず達成する
+# スケジュール投稿(07:07-16:07 JST)終了後、3回監査して不足分を自動補完
+
+on:
+  schedule:
+    - cron: '7  8 * * *'   # 17:07 JST (第1監査: スケジュール分完了後)
+    - cron: '7 11 * * *'   # 20:07 JST (第2監査)
+    - cron: '7 14 * * *'   # 23:07 JST (最終監査)
+  workflow_dispatch:
+    inputs:
+      target_count:
+        description: '目標投稿数 (デフォルト: 10)'
+        required: false
+        default: '10'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - name: JST今日の投稿数をカウント
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # JST今日の開始時刻をUTCで計算 (JST = UTC+9)
+          UTC_START=$(python3 -c "
+          from datetime import datetime, timezone, timedelta
+          JST = timezone(timedelta(hours=9))
+          now = datetime.now(JST)
+          today_jst = now.replace(hour=0, minute=0, second=0, microsecond=0)
+          today_utc = today_jst.astimezone(timezone.utc)
+          print(today_utc.strftime('%Y-%m-%dT%H:%M:%SZ'))
+          ")
+          JST_DATE=$(python3 -c "
+          from datetime import datetime, timezone, timedelta
+          JST = timezone(timedelta(hours=9))
+          print(datetime.now(JST).strftime('%Y-%m-%d'))
+          ")
+          echo "JST今日: ${JST_DATE} (UTC開始: ${UTC_START})"
+
+          # blog-post.yml の成功件数を取得
+          COUNT=$(gh run list \
+            --repo "${{ github.repository }}" \
+            --workflow blog-post.yml \
+            --status success \
+            --limit 50 \
+            --json createdAt \
+            | python3 -c "
+          import sys, json
+          from datetime import datetime, timezone
+          start = datetime.fromisoformat('${UTC_START}'.replace('Z','+00:00'))
+          runs = json.load(sys.stdin)
+          count = sum(1 for r in runs if datetime.fromisoformat(r['createdAt'].replace('Z','+00:00')) >= start)
+          print(count)
+          ")
+
+          TARGET=${{ github.event.inputs.target_count || 10 }}
+          GAP=$((TARGET - COUNT))
+          if [ $GAP -lt 0 ]; then GAP=0; fi
+
+          echo "📊 本日の投稿実績: ${COUNT}/${TARGET}"
+          echo "TODAY_COUNT=${COUNT}" >> $GITHUB_ENV
+          echo "TARGET=${TARGET}" >> $GITHUB_ENV
+          echo "MISSING=${GAP}" >> $GITHUB_ENV
+          echo "JST_DATE=${JST_DATE}" >> $GITHUB_ENV
+
+          if [ $COUNT -ge $TARGET ]; then
+            echo "✅ 目標達成済み (${COUNT}/${TARGET}本)"
+          else
+            echo "⚠️  不足: ${COUNT}/${TARGET}本 → ${GAP}本追加が必要"
+          fi
+
+      - name: 不足分を自動追加投稿
+        if: env.MISSING > 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🚀 ${MISSING}本の追加投稿を開始..."
+          SUCCESS=0
+          FAIL=0
+          for i in $(seq 1 $MISSING); do
+            echo "  → 追加投稿 ${i}/${MISSING} をトリガー"
+            if gh workflow run blog-post.yml \
+              --repo "${{ github.repository }}" \
+              2>&1; then
+              SUCCESS=$((SUCCESS + 1))
+            else
+              FAIL=$((FAIL + 1))
+              echo "  ⚠️ トリガー失敗 (${i}件目)"
+            fi
+            sleep 5  # GitHub Actions の起動間隔
+          done
+          echo "✅ トリガー完了: 成功${SUCCESS}件 / 失敗${FAIL}件"
+
+      - name: 監査サマリーを出力
+        run: |
+          NOW_JST=$(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M JST')
+          echo "=============================="
+          echo "📋 ブログ投稿監査レポート"
+          echo "日付: ${JST_DATE}"
+          echo "監査時刻: ${NOW_JST}"
+          echo "実績: ${TODAY_COUNT}/${TARGET}本"
+          if [ "${MISSING}" -gt 0 ]; then
+            echo "追加トリガー: ${MISSING}本"
+          else
+            echo "ステータス: ✅ 目標達成"
+          fi
+          echo "=============================="
