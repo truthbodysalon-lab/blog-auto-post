@@ -17,6 +17,8 @@ function readTodayLog() {
 }
 
 function isBatchRunning() {
+  const dir = path.dirname(LOCK_FILE);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   if (!fs.existsSync(LOCK_FILE)) return false;
   try {
     const pid = parseInt(fs.readFileSync(LOCK_FILE, 'utf8').trim(), 10);

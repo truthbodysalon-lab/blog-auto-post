@@ -58,6 +58,8 @@ async function postWithRetry(page, article) {
 const LOCK_FILE = path.resolve('logs', 'batch.lock');
 
 function acquireLock() {
+  const dir = path.dirname(LOCK_FILE);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   // 既存ロックがあれば生きているプロセスか確認
   if (fs.existsSync(LOCK_FILE)) {
     try {
