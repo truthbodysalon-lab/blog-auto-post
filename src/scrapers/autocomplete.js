@@ -1,13 +1,24 @@
 /**
  * Google オートコンプリート API
- * ラッコキーワードと同じデータソース（Googleサジェスト）を直接取得
+ * ラッコキーワード（rakkokeyword.com）と同じデータソース（Googleサジェスト）を直接取得
+ *
+ * 重点ターゲット: 「長岡市」「整体」「肩こり」「頭痛」上位表示
  */
 
 // 症状×切り口のシードクエリ
+// ラッコキーワードで「長岡市 整体」「長岡市 肩こり」「長岡市 頭痛」を検索した場合の相当クエリ
 const SEED_QUERIES = {
   '肩こり': [
-    '肩こり 長岡市',
-    '肩こり 整体 新潟',
+    // 【優先】長岡市×整体×肩こり — メインターゲット
+    '長岡市 肩こり',
+    '長岡市 整体 肩こり',
+    '長岡市 肩こり 整体',
+    '長岡市 肩こり 治療',
+    // 新潟エリア
+    '新潟 肩こり 整体',
+    '新潟県 肩こり 整体院',
+    // 全国汎用（ボリュームが大きいキーワードを把握）
+    '肩こり 整体',
     '肩こり 原因 デスクワーク',
     '肩こり 解消 女性',
     '慢性肩こり 整体',
@@ -15,24 +26,38 @@ const SEED_QUERIES = {
     '肩甲骨 こり 改善',
   ],
   '頭痛': [
-    '頭痛 長岡市',
-    '頭痛 整体 新潟',
+    // 【優先】長岡市×整体×頭痛 — メインターゲット
+    '長岡市 頭痛',
+    '長岡市 整体 頭痛',
+    '長岡市 頭痛 整体',
+    '長岡市 頭痛 治療',
+    // 新潟エリア
+    '新潟 頭痛 整体',
+    '新潟県 頭痛専門 整体院',
+    // 全国汎用
+    '頭痛 整体',
     '緊張型頭痛 原因',
+    '緊張型頭痛 整体',
     '頭痛 解消 整体',
     '後頭部 頭痛 原因',
     '片頭痛 整体',
+    '頭痛 薬 やめたい',
   ],
   '姿勢': [
+    '長岡市 姿勢矯正',
+    '長岡市 猫背 整体',
+    '新潟 姿勢 矯正 整体',
     '猫背 整体 長岡市',
-    '姿勢 矯正 新潟',
     '巻き肩 改善 整体',
     'ストレートネック 整体',
     '姿勢 改善 女性',
     '反り腰 整体',
   ],
   '骨盤矯正': [
-    '骨盤矯正 長岡市',
-    '骨盤 歪み 整体 新潟',
+    '長岡市 骨盤矯正',
+    '長岡市 産後 骨盤矯正',
+    '新潟 骨盤矯正 整体',
+    '骨盤矯正 整体 長岡',
     '産後 骨盤矯正',
     '骨盤 歪み 原因 女性',
     '骨盤矯正 効果',
@@ -61,8 +86,13 @@ async function fetchSuggestions(seedQuery) {
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const buf = await res.arrayBuffer();
-  // Google Suggest API は Shift_JIS で返してくる
-  const text = new TextDecoder('shift_jis').decode(buf);
+  // Google Suggest API は Shift_JIS または UTF-8 で返す
+  let text;
+  try {
+    text = new TextDecoder('shift_jis').decode(buf);
+  } catch {
+    text = new TextDecoder('utf-8').decode(buf);
+  }
   const json = JSON.parse(text);
   return (json[1] || []).map(s => (typeof s === 'string' ? s : s[0]));
 }
@@ -73,26 +103,39 @@ export async function fetchAutoCompleteKeywords() {
   for (const [coreSymptom, seeds] of Object.entries(SEED_QUERIES)) {
     for (const seed of seeds) {
       try {
-        console.log(`  📡 オートコンプリート: "${seed}"`);
+        console.log(`  📡 ラッコキーワード相当: "${seed}"`);
         const suggestions = await fetchSuggestions(seed);
 
         for (const term of suggestions) {
-          if (!term || term.length < 4 || term.length > 40) continue;
+          if (!term || term.length < 4 || term.length > 50) continue;
           const core = detectCoreSymptom(term) || coreSymptom;
-          results.push({ term, coreSymptom: core, source: 'autocomplete', seedQuery: seed });
+          // 「長岡市」「整体」「肩こり」「頭痛」を含むキーワードに高優先度フラグ
+          const isLocal = term.includes('長岡') || term.includes('新潟');
+          const isTarget = ['整体', '肩こり', '頭痛'].some(t => term.includes(t));
+          results.push({
+            term,
+            coreSymptom: core,
+            source: 'autocomplete',
+            seedQuery: seed,
+            isLocal,
+            isTarget,
+            priority: isLocal && isTarget ? 10 : isLocal ? 5 : isTarget ? 3 : 1,
+          });
         }
-        await new Promise(r => setTimeout(r, 500)); // レート制限配慮
+        await new Promise(r => setTimeout(r, 600));
       } catch (e) {
         console.warn(`  ⚠️ オートコンプリートエラー [${seed}]: ${e.message.slice(0, 60)}`);
       }
     }
   }
 
-  // 重複除去
-  const seen = new Set();
-  return results.filter(k => {
-    if (seen.has(k.term)) return false;
-    seen.add(k.term);
-    return true;
-  });
+  // 重複除去（優先度の高い方を残す）
+  const seen = new Map();
+  for (const k of results) {
+    if (!seen.has(k.term) || seen.get(k.term).priority < k.priority) {
+      seen.set(k.term, k);
+    }
+  }
+
+  return [...seen.values()].sort((a, b) => b.priority - a.priority);
 }
