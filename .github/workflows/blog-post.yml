@@ -2,18 +2,23 @@ name: Blog Auto Post
 
 on:
   schedule:
-    - cron: '57 10 * * *'   # 毎日 19:57 JST (= 10:57 UTC) メイン実行
-    - cron: '05 04 * * *'   # 毎日 13:05 JST (= 04:05 UTC) リカバリー実行（当日未完了なら再実行）
-  workflow_dispatch:         # 手動実行ボタン
-
-concurrency:
-  group: blog-post
-  cancel-in-progress: false  # 実行中のジョブをキャンセルしない（二重起動防止）
+    # 1時間おきに1投稿ずつ — 毎日10本 (JST = UTC+9)
+    - cron: '7 22 * * *'    # Slot 1:  07:07 JST
+    - cron: '7 23 * * *'    # Slot 2:  08:07 JST
+    - cron: '7  0 * * *'    # Slot 3:  09:07 JST
+    - cron: '7  1 * * *'    # Slot 4:  10:07 JST
+    - cron: '7  2 * * *'    # Slot 5:  11:07 JST
+    - cron: '7  3 * * *'    # Slot 6:  12:07 JST
+    - cron: '7  4 * * *'    # Slot 7:  13:07 JST
+    - cron: '7  5 * * *'    # Slot 8:  14:07 JST
+    - cron: '7  6 * * *'    # Slot 9:  15:07 JST
+    - cron: '7  7 * * *'    # Slot 10: 16:07 JST
+  workflow_dispatch:
 
 jobs:
   post:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 30      # 1本投稿なので30分で十分
 
     steps:
       - name: Checkout
@@ -47,19 +52,19 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
-      - name: Run batch
+      - name: Run batch (1投稿)
         run: node src/batch.js
         env:
           ADMIN_URL: ${{ secrets.ADMIN_URL }}
           ADMIN_LOGIN_ID: ${{ secrets.ADMIN_LOGIN_ID }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GSC_SITE_URL: https://body-salon-truth.com/
           DEFAULT_CATEGORY: 整体
-          SNS_FACEBOOK: 'true'
-          SNS_TWITTER: 'true'
           MODE: headless
           SKIP_IMAGE: 'true'
+          POST_COUNT: '1'
+          FORCE: 'true'
+          PUBLISH_NOW: 'true'
 
       - name: Upload logs on failure
         if: failure()

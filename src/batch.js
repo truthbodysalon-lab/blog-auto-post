@@ -11,10 +11,15 @@ const MAX_POST_RETRIES = 3;
 const MAX_GEN_RETRIES = 2;
 
 function formatPublishAt(hour, minute) {
+  const pad = n => String(n).padStart(2, '0');
+  // PUBLISH_NOW=true の場合は3分後に即時公開
+  if (process.env.PUBLISH_NOW === 'true') {
+    const d = new Date(Date.now() + 3 * 60 * 1000);
+    return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
   const d = new Date();
   d.setHours(hour, minute, 0, 0);
   if (d.getTime() < Date.now()) d.setDate(d.getDate() + 1);
-  const pad = n => String(n).padStart(2, '0');
   return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
