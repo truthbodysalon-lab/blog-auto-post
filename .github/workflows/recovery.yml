@@ -1,0 +1,66 @@
+name: Blog Auto Post Recovery
+
+on:
+  workflow_run:
+    workflows: ["Blog Auto Post"]
+    types: [completed]
+
+concurrency:
+  group: blog-post
+  cancel-in-progress: false
+
+jobs:
+  retry:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Restore keyword cache
+        uses: actions/cache@v4
+        with:
+          path: keywords/cache.json
+          key: keyword-cache-${{ hashFiles('keywords/cache.json') }}
+          restore-keys: keyword-cache-
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Retry batch (FORCE)
+        run: node src/batch.js
+        env:
+          ADMIN_URL: ${{ secrets.ADMIN_URL }}
+          ADMIN_LOGIN_ID: ${{ secrets.ADMIN_LOGIN_ID }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GSC_SITE_URL: https://body-salon-truth.com/
+          DEFAULT_CATEGORY: 整体
+          SNS_FACEBOOK: 'true'
+          SNS_TWITTER: 'true'
+          MODE: headless
+          SKIP_IMAGE: 'true'
+          FORCE: 'true'
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recovery-logs-${{ github.run_id }}
+          path: |
+            logs/
+            debug-*.png
+          retention-days: 7
