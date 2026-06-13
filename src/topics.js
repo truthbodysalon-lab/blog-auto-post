@@ -196,13 +196,40 @@ function buildSymptomQueue(count) {
   });
 }
 
+function loadContentStrategy() {
+  try {
+    const f = path.resolve('content-strategy.json');
+    if (!fs.existsSync(f)) return null;
+    return JSON.parse(fs.readFileSync(f, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
+// 戦略データを反映した角度選択（使用回数が少ない角度を優先）
+function pickAngleWithStrategy(angles, usedAngles, strategy) {
+  const underused = strategy?.underusedAngles || [];
+  // まず不足角度の中から未使用のものを優先
+  const prioritized = angles.filter(a => underused.includes(a.name) && !usedAngles.includes(a.name));
+  if (prioritized.length > 0) return prioritized[Math.floor(Math.random() * prioritized.length)];
+  return pickFromArray(angles, usedAngles);
+}
+
 export function generateDailyTopics(count = 10) {
   const usedAngles = [];
   const usedLifestyles = [];
   const seasonal = getMonthSeasonal();
   const symptomQueue = buildSymptomQueue(count);
 
-  // キーワードキャッシュがあれば使用（バリエーションを実需要ベースに上書き）
+  // コンテンツ戦略（週次で更新）
+  const strategy = loadContentStrategy();
+  if (strategy) {
+    console.log(`📈 コンテンツ戦略使用中 (更新: ${strategy.updatedAt?.slice(0,10)})`);
+    if (strategy.underusedAngles?.length > 0) console.log(`  強化角度: ${strategy.underusedAngles.join(', ')}`);
+    if (strategy.overusedPatterns?.length > 0) console.log(`  避けるパターン: ${strategy.overusedPatterns.join(', ')}`);
+  }
+
+  // キーワードキャッシュがあれば使用
   const cache = loadKeywordCache();
   const cachedVariants = cache ? buildVariantsFromCache(cache) : null;
   if (cachedVariants) {
@@ -214,14 +241,16 @@ export function generateDailyTopics(count = 10) {
   const topics = [];
   for (let i = 0; i < count; i++) {
     const { core, variant } = symptomQueue[i];
-    const angle = pickFromArray(ANGLES, usedAngles);
+    const angle = pickAngleWithStrategy(ANGLES, usedAngles, strategy);
     const lifestyle = pickFromArray(LIFESTYLES, usedLifestyles);
 
-    // キャッシュがあれば高スコアキーワードを症状バリエーションとして使用
+    // 優先順位: 戦略トレンド > キーワードキャッシュ > 静的バリアント
     let symptomVariant = variant;
-    if (cachedVariants && cachedVariants[core] && cachedVariants[core].length > 0) {
-      const cacheVars = cachedVariants[core];
-      symptomVariant = cacheVars[i % cacheVars.length];
+    if (strategy?.trendingTopics?.[core]?.length > 0) {
+      const trendVars = strategy.trendingTopics[core];
+      symptomVariant = trendVars[i % trendVars.length];
+    } else if (cachedVariants && cachedVariants[core]?.length > 0) {
+      symptomVariant = cachedVariants[core][i % cachedVariants[core].length];
     }
 
     usedAngles.push(angle.name);
@@ -243,6 +272,8 @@ export function generateDailyTopics(count = 10) {
       seasonal,
       publishHour,
       publishMinute,
+      overusedPatterns: strategy?.overusedPatterns || [],
+      titleTemplates: strategy?.titleTemplates || [],
     });
   }
 
