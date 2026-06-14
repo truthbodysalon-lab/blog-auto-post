@@ -53,5 +53,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add keywords/cache.json
-          git diff --staged --quiet || git commit -m "chore: update keyword cache"
-          git push
+          if git diff --staged --quiet; then
+            echo "ℹ️ コミット対象の変更なし"
+            exit 0
+          fi
+          git commit -m "chore: update keyword cache"
+          # 他ワークフローの並行pushによるnon-fast-forward rejected対策: rebaseしてリトライ
+          for i in 1 2 3; do
+            if git push; then
+              echo "✅ push成功"
+              exit 0
+            fi
+            echo "⚠️ push rejected — rebaseして再試行 ($i/3)"
+            git pull --rebase --autostash origin main || true
+          done
+          echo "::error::3回試行してもpushに失敗"
+          exit 1
