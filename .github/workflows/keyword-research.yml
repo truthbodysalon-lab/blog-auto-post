@@ -25,8 +25,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browsers
-        run: npx playwright install chromium --with-deps
+      # CDNからの遅い/ハングしがちなブラウザDLを避けてaptから高速インストール
+      - name: Install Chromium via apt
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y chromium-browser 2>/dev/null || sudo apt-get install -y chromium 2>/dev/null
+          CHROMIUM_BIN=$(which chromium-browser 2>/dev/null || which chromium 2>/dev/null)
+          echo "CHROMIUM_PATH=${CHROMIUM_BIN}" >> $GITHUB_ENV
+          echo "✅ Chromium: ${CHROMIUM_BIN}"
+
+      # Playwright の system deps のみインストール（ブラウザバイナリはapt版を使用）
+      - name: Install Playwright system deps
+        run: npx playwright install-deps chromium
 
       - name: Run keyword research
         run: node src/keyword-research.js

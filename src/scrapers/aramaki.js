@@ -18,7 +18,12 @@ export async function fetchAramakiVolumes(keywords) {
   const results = {};
 
   const mode = process.env.MODE === 'headless' ? true : false;
-  const browser = await chromium.launch({ headless: mode });
+  const launchOptions = { headless: mode };
+  // GitHub Actions: apt経由Chromiumのパスを使用（CDNダウンロード不要・ハング防止）
+  if (process.env.CHROMIUM_PATH) {
+    launchOptions.executablePath = process.env.CHROMIUM_PATH;
+  }
+  const browser = await chromium.launch(launchOptions);
   try {
     const ctx = await browser.newContext({
       locale: 'ja-JP',
