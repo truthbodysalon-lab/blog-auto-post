@@ -5,6 +5,10 @@ on:
     - cron: '33 09 * * 0'   # 毎週日曜 18:33 JST (= 09:33 UTC)
   workflow_dispatch:
 
+# cache.json をコミット/pushするため書き込み権限が必要（403対策）
+permissions:
+  contents: write
+
 jobs:
   research:
     runs-on: ubuntu-latest
