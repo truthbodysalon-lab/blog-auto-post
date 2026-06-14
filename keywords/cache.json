@@ -1,11 +1,908 @@
 {
-  "updatedAt": "2026-06-07T00:36:53.555Z",
-  "totalKeywords": 0,
+  "updatedAt": "2026-06-14T12:15:09.265Z",
+  "totalKeywords": 223,
   "bySymptom": {
-    "肩こり": [],
-    "頭痛": [],
-    "姿勢": [],
-    "骨盤矯正": []
-  },
-  "gscQueries": []
+    "肩こり": [
+      {
+        "term": "長岡市 整体",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "anchor",
+          "aramaki"
+        ],
+        "volume": 320,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 88
+      },
+      {
+        "term": "肩こり 整体",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "anchor",
+          "aramaki"
+        ],
+        "volume": 1620,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 81
+      },
+      {
+        "term": "長岡市 肩こり おすすめ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 肩こり 治療",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 肩こり マッサージ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 整体 肩こり",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "肩こり頭痛改善専門 整体院トゥルース 長岡市 レビュー",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡 市 肩こり マッサージ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 肩こり 整体",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 肩こり 頭痛",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟 市 整体 肩こり",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟 肩こり マッサージ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟 肩こり おすすめ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟 肩こり 整形外科",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟 肩こり 整体",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete",
+          "aramaki"
+        ],
+        "volume": 2,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟県 整体 人気",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡 市 肩こり 頭痛",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 肩こり",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "anchor",
+          "aramaki"
+        ],
+        "volume": 4,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 56
+      },
+      {
+        "term": "肩こり 整体 整骨院",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete",
+          "aramaki"
+        ],
+        "volume": 34,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 24
+      },
+      {
+        "term": "肩こり 整体 おすすめ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete",
+          "aramaki"
+        ],
+        "volume": 28,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 24
+      }
+    ],
+    "頭痛": [
+      {
+        "term": "頭痛 整体",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "anchor",
+          "aramaki"
+        ],
+        "volume": 2960,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 81
+      },
+      {
+        "term": "長岡市 頭痛外来",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete",
+          "aramaki"
+        ],
+        "volume": 6,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 61
+      },
+      {
+        "term": "長岡市 頭痛 専門医",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete",
+          "aramaki"
+        ],
+        "volume": 6,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 61
+      },
+      {
+        "term": "新潟 頭痛 整体",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete",
+          "aramaki"
+        ],
+        "volume": 6,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 61
+      },
+      {
+        "term": "長岡市 頭痛 整体",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 気圧 頭痛",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 頭痛 医者",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 頭痛 内科",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡 整体 頭痛",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡 市 整体 マッサージ",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 頭痛専門医",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟 頭痛 専門 こはく 整体 院",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟 市 頭痛 整体",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟 頭痛 専門",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟県 頭痛専門医",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "頭痛 整体 院 新潟",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 頭痛",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "anchor",
+          "aramaki"
+        ],
+        "volume": 2,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 56
+      },
+      {
+        "term": "片頭痛 整体",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "anchor",
+          "aramaki"
+        ],
+        "volume": 200,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 51
+      },
+      {
+        "term": "緊張型頭痛",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "anchor"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 31
+      },
+      {
+        "term": "肩凝り 頭痛 整体",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      }
+    ],
+    "姿勢": [
+      {
+        "term": "猫背 矯正 整体",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "anchor",
+          "aramaki"
+        ],
+        "volume": 320,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 63
+      },
+      {
+        "term": "長岡 市 姿勢 改善",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "長岡 姿勢矯正",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "長岡 市 猫背 矯正",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "長岡 市 猫背",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "長岡 猫背 矯正",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "新潟 姿勢 矯正",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "新潟 姿勢 改善",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "新潟 市 姿勢 矯正",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "猫背 矯正 長岡",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "巻き肩 改善 整体 東京",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "巻き肩改善 整体 大阪",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体で治る",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体 整骨 どっち",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体 おすすめ",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体 東京",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体 値段",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体 大阪",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体 千葉",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体 何回",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      }
+    ],
+    "骨盤矯正": [
+      {
+        "term": "骨盤矯正 整体",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "anchor",
+          "aramaki"
+        ],
+        "volume": 720,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 81
+      },
+      {
+        "term": "長岡市 整体+骨盤矯正",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 産後 整体",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "新潟 整体 骨盤矯正",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡 整体 骨盤矯正",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
+        "term": "長岡市 骨盤矯正 産後",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "長岡市 骨盤矯正 おすすめ",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "長岡 市 骨盤 矯正 産後",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "新潟 骨盤矯正 人気",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "新潟 骨盤矯正 安い",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "新潟 骨盤矯正 おすすめ",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "骨盤矯正 長岡 おすすめ",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "骨盤 矯正 長岡 市",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": false,
+        "score": 35
+      },
+      {
+        "term": "産後 骨盤矯正",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "anchor"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 16
+      },
+      {
+        "term": "産後 骨盤矯正 いつから",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "産後 骨盤矯正 ガードル",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "産後 骨盤矯正 意味ない",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "産後 骨盤矯正 ベルト",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "産後 骨盤矯正 近く",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "産後 骨盤矯正 おすすめ",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      }
+    ]
+  }
 }
