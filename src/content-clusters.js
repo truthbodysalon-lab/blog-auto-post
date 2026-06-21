@@ -43,12 +43,23 @@ export const CONTENT_CLUSTERS = {
   '姿勢': {
     pillarKeyword: '長岡市 姿勢矯正 整体',
     subtopics: [
+      // --- 猫背 ---
       { id: 'shisei-01', keyword: '長岡市 猫背 改善 整体', theme: '猫背の原因と整体での根本改善' },
+      { id: 'shisei-11', keyword: '長岡市 猫背 肩こり 頭痛', theme: '猫背が引き起こす肩こり・頭痛の仕組み' },
+      { id: 'shisei-12', keyword: '長岡市 猫背 大人 治し方', theme: '大人の猫背を整体で改善する方法' },
+      { id: 'shisei-13', keyword: '長岡市 スマホ 猫背 悪化', theme: 'スマホ・PCで猫背が進行するメカニズム' },
+      { id: 'shisei-14', keyword: '長岡市 猫背 骨盤 歪み 関係', theme: '猫背と骨盤の歪みはセットで起きる' },
+      // --- 反り腰 ---
+      { id: 'shisei-06', keyword: '長岡市 反り腰 原因 改善', theme: '反り腰の原因と整体での改善方法' },
+      { id: 'shisei-15', keyword: '長岡市 反り腰 腰痛 関係', theme: '反り腰が慢性腰痛を引き起こす理由' },
+      { id: 'shisei-16', keyword: '長岡市 反り腰 産後 改善', theme: '産後に反り腰が悪化する原因と対策' },
+      { id: 'shisei-17', keyword: '長岡市 反り腰 チェック 症状', theme: '反り腰のセルフチェックと代表的な症状' },
+      { id: 'shisei-18', keyword: '長岡市 反り腰 骨盤 前傾', theme: '骨盤前傾・反り腰を整体で根本から整える' },
+      // --- その他姿勢 ---
       { id: 'shisei-02', keyword: '長岡市 ストレートネック 改善', theme: 'ストレートネック（スマホ首）の改善' },
       { id: 'shisei-03', keyword: '長岡市 巻き肩 治し方', theme: '巻き肩の原因と改善ストレッチ' },
       { id: 'shisei-04', keyword: '長岡市 テレワーク 姿勢 悪化', theme: 'テレワーク・在宅勤務で姿勢が崩れる理由' },
       { id: 'shisei-05', keyword: '長岡市 姿勢 肩こり 頭痛 関係', theme: '姿勢の崩れが肩こり・頭痛を引き起こす仕組み' },
-      { id: 'shisei-06', keyword: '長岡市 反り腰 原因 改善', theme: '反り腰の原因と改善方法' },
       { id: 'shisei-07', keyword: '長岡市 姿勢矯正 グッズ 効果', theme: '姿勢矯正グッズvsの整体の違い' },
       { id: 'shisei-08', keyword: '長岡市 子供 姿勢 改善', theme: '子供・10代の姿勢悪化と対策' },
       { id: 'shisei-09', keyword: '長岡市 O脚 改善 整体', theme: 'O脚・X脚と骨盤の歪みの関係' },
