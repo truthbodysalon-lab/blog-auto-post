@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { getNextSubtopic, recordSubtopicCovered, getClusterProgress } from './content-clusters.js';
 
 const HISTORY_FILE = path.resolve('posts/history.json');
 const KEYWORD_CACHE_FILE = path.resolve('keywords/cache.json');
@@ -229,6 +230,15 @@ export function generateDailyTopics(count = 10) {
     if (strategy.overusedPatterns?.length > 0) console.log(`  避けるパターン: ${strategy.overusedPatterns.join(', ')}`);
   }
 
+  // クラスタープログレスを表示
+  try {
+    const progress = getClusterProgress();
+    console.log('📊 クラスターカバレッジ:');
+    for (const [symptom, p] of Object.entries(progress)) {
+      console.log(`  ${symptom}: ${p.covered}/${p.total} (${p.pct}%) → 次: ${p.nextTarget?.keyword || '-'}`);
+    }
+  } catch {}
+
   // キーワードキャッシュがあれば使用
   const cache = loadKeywordCache();
   const cachedVariants = cache ? buildVariantsFromCache(cache) : null;
@@ -244,11 +254,26 @@ export function generateDailyTopics(count = 10) {
     const angle = pickAngleWithStrategy(ANGLES, usedAngles, strategy);
     const lifestyle = pickFromArray(LIFESTYLES, usedLifestyles);
 
-    // 優先順位: 戦略トレンド > キーワードキャッシュ > 静的バリアント
+    // クラスターから未カバーのサブトピックを取得（SEO1位狙いキーワード）
+    let subtopicKeyword = null;
+    let subtopicTheme = null;
+    let subtopicId = null;
+    try {
+      const nextSub = getNextSubtopic(core);
+      if (nextSub) {
+        subtopicKeyword = nextSub.keyword;
+        subtopicTheme = nextSub.theme;
+        subtopicId = nextSub.id;
+      }
+    } catch {}
+
+    // 優先順位: 戦略トレンド > クラスターサブトピック > キーワードキャッシュ > 静的バリアント
     let symptomVariant = variant;
     if (strategy?.trendingTopics?.[core]?.length > 0) {
       const trendVars = strategy.trendingTopics[core];
       symptomVariant = trendVars[i % trendVars.length];
+    } else if (subtopicTheme) {
+      symptomVariant = subtopicTheme;
     } else if (cachedVariants && cachedVariants[core]?.length > 0) {
       symptomVariant = cachedVariants[core][i % cachedVariants[core].length];
     }
@@ -274,10 +299,25 @@ export function generateDailyTopics(count = 10) {
       publishMinute,
       overusedPatterns: strategy?.overusedPatterns || [],
       titleTemplates: strategy?.titleTemplates || [],
+      // SEO1位狙いクラスター情報
+      subtopicKeyword,
+      subtopicTheme,
+      subtopicId,
     });
   }
 
   return topics;
+}
+
+// 投稿完了後にクラスターカバレッジを記録
+export function recordTopicPosted(topic) {
+  if (!topic.subtopicId) return;
+  try {
+    recordSubtopicCovered(topic.coreSymptom, topic.subtopicId);
+    console.log(`✅ クラスター記録: ${topic.coreSymptom} / ${topic.subtopicId}`);
+  } catch (e) {
+    console.warn(`⚠️ クラスター記録失敗: ${e.message}`);
+  }
 }
 
 export function isDuplicateTitle(newTitle, threshold = 0.7) {

@@ -4,7 +4,7 @@ import path from 'path';
 import { getBrowserContext, ensureLoggedIn } from './login.js';
 import { postBlog } from './post.js';
 import { generateArticleForTopic } from './generate.js';
-import { generateDailyTopics, appendHistory } from './topics.js';
+import { generateDailyTopics, appendHistory, recordTopicPosted } from './topics.js';
 import { notify, notifySuccess, notifyError, notifyWarn, writeLog } from './notify.js';
 
 const MAX_POST_RETRIES = 3;
@@ -141,6 +141,8 @@ async function main() {
   for (const topic of targetTopics) {
     try {
       const article = await generateWithRetry(topic);
+      // topic情報を保持（クラスターカバレッジ記録用）
+      article._topic = { coreSymptom: topic.coreSymptom, subtopicId: topic.subtopicId };
       articles.push(article);
       const dir = path.resolve('posts');
       if (!fs.existsSync(dir)) fs.mkdirSync(dir);
@@ -178,6 +180,7 @@ async function main() {
         if (result?.urlChanged && !result?.retryFailed) {
           success++;
           appendHistory({ title: article.title, category: article.category, publishAt: article.publishAt });
+          recordTopicPosted(article._topic || {});
           writeLog('INFO', `投稿成功: ${article.title}`, { publishAt: article.publishAt });
         } else {
           failed++;

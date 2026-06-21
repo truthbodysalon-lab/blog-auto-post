@@ -1,7 +1,8 @@
-name: Content Strategy Update
+name: SEO Strategy Weekly Update
 
 # 毎週日曜 11:00 JST に実行
-# ラッコキーワード＋あらまきじゃけ でSEOデータ収集 → content-strategy.json + keywords/cache.json 更新
+# ラッコキーワード + あらまきじゃけ + クラスターギャップ分析 + Geminiトレンド調査
+# → content-strategy.json + keywords/cache.json + rankings/seo-audit-*.json 更新
 
 on:
   schedule:
@@ -63,8 +64,15 @@ jobs:
           MODE: headless
         continue-on-error: true   # 失敗してもコンテンツ分析は続行
 
-      # Step 2: 投稿履歴分析 + Gemini トレンド調査 → content-strategy.json
-      - name: Run content analyzer
+      # Step 2: クラスターギャップ分析 + Geminiトレンド調査 → content-strategy.json 更新
+      - name: Run SEO audit (クラスター分析 + トレンド)
+        run: node src/seo-audit.js
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        continue-on-error: true
+
+      # Step 3: 旧content-analyzerも続行（互換性維持）
+      - name: Run content analyzer (旧)
         run: node src/content-analyzer.js
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -75,12 +83,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add keywords/cache.json content-strategy.json
+          git add keywords/cache.json content-strategy.json rankings/ 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "ℹ️ コミット対象の変更なし"
             exit 0
           fi
-          git commit -m "chore: weekly SEO strategy update $(date +%Y-%m-%d)"
+          git commit -m "chore: weekly SEO strategy + cluster audit $(date +%Y-%m-%d)"
           # 他ワークフローの並行pushによるnon-fast-forward rejected対策: rebaseしてリトライ
           for i in 1 2 3; do
             if git push; then
