@@ -35,7 +35,8 @@ async function callGemini(prompt) {
     } catch (e) {
       const isRetryable = e.message?.includes('429') || e.message?.includes('503');
       if (isRetryable && attempt < 3) {
-        const wait = [10000, 20000][attempt - 1];
+        // 429の場合はAPIが推奨する待機時間（約52秒）+ バッファ
+        const wait = [60000, 90000][attempt - 1];
         console.log(`⏳ Gemini待機 (${attempt}/3) ${wait / 1000}秒...`);
         await new Promise(r => setTimeout(r, wait));
       } else throw e;

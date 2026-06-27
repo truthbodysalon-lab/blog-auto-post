@@ -2,7 +2,7 @@ name: Ekiten Auto Post
 
 on:
   schedule:
-    - cron: '7 1 * * *'    # 毎日 10:07 JST (= 01:07 UTC)
+    - cron: '7 9 * * *'    # 毎日 18:07 JST (= 09:07 UTC) ← HPブログ10本終了後
   workflow_dispatch:        # 手動実行も可能
 
 jobs:
