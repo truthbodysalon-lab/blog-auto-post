@@ -12,15 +12,25 @@ const MAX_GEN_RETRIES = 2;
 
 function formatPublishAt(hour, minute) {
   const pad = n => String(n).padStart(2, '0');
-  // PUBLISH_NOW=true の場合は3分後に即時公開
+  const JST = 9 * 60 * 60 * 1000;
+  const fmtJst = d => {
+    // CMS expects JST; use getUTC* on a JST-shifted Date to avoid local-tz bugs
+    const j = new Date(d.getTime() + JST);
+    return `${j.getUTCFullYear()}/${pad(j.getUTCMonth()+1)}/${pad(j.getUTCDate())} ${pad(j.getUTCHours())}:${pad(j.getUTCMinutes())}`;
+  };
+  // PUBLISH_NOW=true の場合は現在JST時刻の3分後を指定して即時公開
   if (process.env.PUBLISH_NOW === 'true') {
-    const d = new Date(Date.now() + 3 * 60 * 1000);
-    return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    return fmtJst(new Date(Date.now() + 3 * 60 * 1000));
   }
-  const d = new Date();
-  d.setHours(hour, minute, 0, 0);
-  if (d.getTime() < Date.now()) d.setDate(d.getDate() + 1);
-  return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  // hour/minute はJST時刻 → UTC換算してDateオブジェクトを作る
+  const nowUtc = Date.now();
+  const todayJst = new Date(nowUtc + JST);
+  const targetUtc = Date.UTC(
+    todayJst.getUTCFullYear(), todayJst.getUTCMonth(), todayJst.getUTCDate(),
+    hour - 9, minute, 0, 0
+  );
+  const target = new Date(targetUtc < nowUtc ? targetUtc + 86400000 : targetUtc);
+  return fmtJst(target);
 }
 
 async function generateWithRetry(topic) {
