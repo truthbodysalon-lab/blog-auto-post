@@ -1,0 +1,53 @@
+name: Ekiten Auto Post
+
+on:
+  schedule:
+    - cron: '7 1 * * *'    # 毎日 10:07 JST (= 01:07 UTC)
+  workflow_dispatch:        # 手動実行も可能
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium via apt
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y chromium-browser 2>/dev/null || sudo apt-get install -y chromium 2>/dev/null
+          CHROMIUM_BIN=$(which chromium-browser 2>/dev/null || which chromium 2>/dev/null)
+          echo "CHROMIUM_PATH=${CHROMIUM_BIN}" >> $GITHUB_ENV
+          echo "✅ Chromium: ${CHROMIUM_BIN}"
+
+      - name: Install Playwright system deps
+        run: npx playwright install-deps chromium
+
+      - name: Run ekiten batch (1投稿/日)
+        run: node src/ekiten-batch.js
+        env:
+          EKITEN_EMAIL:    ${{ secrets.EKITEN_EMAIL }}
+          EKITEN_PASSWORD: ${{ secrets.EKITEN_PASSWORD }}
+          GEMINI_API_KEY:  ${{ secrets.GEMINI_API_KEY }}
+          MODE: headless
+
+      - name: Upload debug screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ekiten-debug-${{ github.run_id }}
+          path: |
+            debug-ekiten-*.png
+            logs/ekiten-*.jsonl
+          retention-days: 7
