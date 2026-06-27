@@ -76,7 +76,7 @@ export async function generateArticleForTopic(topic, retryCount = 0) {
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel({
-    model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+    model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
     generationConfig: { responseMimeType: 'application/json', temperature: 0.9 },
   });
 
