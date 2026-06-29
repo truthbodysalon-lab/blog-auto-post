@@ -75,8 +75,14 @@ export async function generateArticleForTopic(topic, retryCount = 0) {
   const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({
-    model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+  // 無料枠はモデルごとに別々の1日上限。429時に別モデルへ自動フォールバックして枯渇を回避
+  const modelCandidates = [
+    process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+    'gemini-2.0-flash',
+    'gemini-2.5-flash-lite',
+  ].filter((m, i, a) => a.indexOf(m) === i);
+  const makeModel = (name) => genAI.getGenerativeModel({
+    model: name,
     generationConfig: { responseMimeType: 'application/json', temperature: 0.9 },
   });
 
@@ -187,15 +193,27 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
   console.log(`🤖 [${topic.slot}/10] 生成中: ${topic.symptom} × ${topic.angle} (${topic.seasonal})`);
 
   let result;
-  for (let attempt = 1; attempt <= 4; attempt++) {
+  let modelIdx = 0;
+  let model = makeModel(modelCandidates[modelIdx]);
+  for (let attempt = 1; attempt <= 6; attempt++) {
     try {
       result = await model.generateContent(prompt);
       break;
     } catch (e) {
-      const isRetryable = e.message?.includes('503') || e.message?.includes('429') || e.message?.includes('overloaded');
-      if (isRetryable && attempt < 4) {
-        const wait = [8000, 15000, 25000][attempt - 1] || 25000;
-        console.log(`⏳ API一時エラー (試行${attempt}/4)、${wait/1000}秒後にリトライ...`);
+      const isQuota = e.message?.includes('429') || e.message?.toLowerCase().includes('quota');
+      const isRetryable = isQuota || e.message?.includes('503') || e.message?.includes('overloaded');
+      // 1日上限(429)に当たったら、別のモデルへ切替（モデルごとに無料枠が別）
+      if (isQuota && modelIdx < modelCandidates.length - 1) {
+        const prev = modelCandidates[modelIdx];
+        modelIdx++;
+        model = makeModel(modelCandidates[modelIdx]);
+        console.log(`⚠️ ${prev} が枠上限(429) → ${modelCandidates[modelIdx]} に切替えて再試行`);
+        await new Promise(r => setTimeout(r, 2000));
+        continue;
+      }
+      if (isRetryable && attempt < 6) {
+        const wait = [8000, 15000, 25000, 25000, 25000][attempt - 1] || 25000;
+        console.log(`⏳ API一時エラー (試行${attempt}/6)、${wait/1000}秒後にリトライ...`);
         await new Promise(r => setTimeout(r, wait));
       } else throw e;
     }
