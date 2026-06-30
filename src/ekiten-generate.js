@@ -23,21 +23,39 @@ function pickSymptom(dayOfYear) {
 
 async function callGemini(prompt) {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
+  // 無料枠はモデルごとに別々の1日上限。429時に別モデルへ自動フォールバックして枯渇を回避
+  // （generate.js と同じ戦略。2.0-flashが limit:0 で枯渇するため2.5-flash優先）
+  const modelCandidates = [
+    process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+    'gemini-2.0-flash',
+    'gemini-2.5-flash-lite',
+  ].filter((m, i, a) => a.indexOf(m) === i);
+  const makeModel = (name) => genAI.getGenerativeModel({
+    model: name,
     generationConfig: { temperature: 0.85 },
   });
 
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  let modelIdx = 0;
+  let model = makeModel(modelCandidates[modelIdx]);
+  for (let attempt = 1; attempt <= 6; attempt++) {
     try {
       const result = await model.generateContent(prompt);
       return result.response.text().trim();
     } catch (e) {
-      const isRetryable = e.message?.includes('429') || e.message?.includes('503');
-      if (isRetryable && attempt < 3) {
-        // 429の場合はAPIが推奨する待機時間（約52秒）+ バッファ
-        const wait = [60000, 90000][attempt - 1];
-        console.log(`⏳ Gemini待機 (${attempt}/3) ${wait / 1000}秒...`);
+      const isQuota = e.message?.includes('429') || e.message?.toLowerCase().includes('quota');
+      const isRetryable = isQuota || e.message?.includes('503') || e.message?.includes('overloaded');
+      // 1日上限(429)に当たったら、別のモデルへ切替（モデルごとに無料枠が別）
+      if (isQuota && modelIdx < modelCandidates.length - 1) {
+        const prev = modelCandidates[modelIdx];
+        modelIdx++;
+        model = makeModel(modelCandidates[modelIdx]);
+        console.log(`⚠️ ${prev} が枠上限(429) → ${modelCandidates[modelIdx]} に切替えて再試行`);
+        await new Promise(r => setTimeout(r, 2000));
+        continue;
+      }
+      if (isRetryable && attempt < 6) {
+        const wait = [8000, 15000, 25000, 60000, 90000][attempt - 1] || 90000;
+        console.log(`⏳ Gemini待機 (${attempt}/6) ${wait / 1000}秒...`);
         await new Promise(r => setTimeout(r, wait));
       } else throw e;
     }
