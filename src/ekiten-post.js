@@ -134,50 +134,52 @@ export async function ekitenLogin(page) {
 
 export async function findBlogPostUrl(page) {
   console.log('🔍 ブログ投稿URLを探索中...');
-  await page.goto(MYPAGE_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
-  await page.waitForTimeout(2000);
-  await shot(page, '05-mypage');
 
-  // マイページ上のリンクからショップ管理・ブログ投稿を探す
-  const blogSelectors = [
-    'a:has-text("ブログ")',
-    'a:has-text("お店ブログ")',
-    'a[href*="blog"]',
-    'a:has-text("投稿")',
-    'a:has-text("新規投稿")',
+  // 全リンクから「お店ブログ/ブログ投稿」候補を抽出するヘルパー
+  const collectLinks = async () => page.locator('a[href]').evaluateAll(
+    els => els.map(e => ({ text: (e.innerText || '').trim().slice(0, 40), href: e.getAttribute('href') }))
+      .filter(l => l.href && /ekiten\.jp/.test(l.href.startsWith('http') ? l.href : `https://www.ekiten.jp${l.href}`))
+  );
+  const isBlogCandidate = (l) =>
+    l.href && /blog|diary|お店ブログ/.test(l.href + ' ' + l.text) &&
+    !/get\.shop|gmocloud|shop-pro|makeshop/.test(l.href);
+
+  // ログイン後の認証済みオーナーページ群を順に探索（/mypage/ は404のため使わない）
+  const ownerLandings = [
+    page.url(),                                   // ログイン直後のショップオーナーページ
+    'https://www.ekiten.jp/shop_owner/',
+    'https://owner.ekiten.jp/',
   ];
-  for (const sel of blogSelectors) {
-    const els = page.locator(sel);
-    const count = await els.count();
-    if (count > 0) {
-      for (let i = 0; i < count; i++) {
-        const href = await els.nth(i).getAttribute('href').catch(() => null);
-        const text = await els.nth(i).innerText().catch(() => '');
-        console.log(`  発見: "${text.trim()}" → ${href}`);
+
+  for (const landing of ownerLandings) {
+    try {
+      if (page.url() !== landing) {
+        await page.goto(landing, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.waitForTimeout(2000);
       }
-      // 新規投稿系のリンクを優先
-      for (let i = 0; i < count; i++) {
-        const href = await els.nth(i).getAttribute('href').catch(() => null);
-        if (href && (href.includes('new') || href.includes('create') || href.includes('post'))) {
-          return href.startsWith('http') ? href : `https://www.ekiten.jp${href}`;
-        }
-      }
-      // なければ最初のリンクを返す
-      const firstHref = await els.first().getAttribute('href').catch(() => null);
-      if (firstHref) {
-        return firstHref.startsWith('http') ? firstHref : `https://www.ekiten.jp${firstHref}`;
-      }
+    } catch { continue; }
+    await shot(page, '05-owner-' + landing.replace(/[^a-z0-9]/gi, '_').slice(-24));
+
+    const links = await collectLinks();
+    const candidates = links.filter(isBlogCandidate);
+    if (candidates.length) {
+      console.log('ブログ候補リンク:', JSON.stringify(candidates.slice(0, 15), null, 2));
+      // 新規投稿系を優先
+      const prefer = candidates.find(l => /new|create|post|add|regist|toko/.test(l.href)) || candidates[0];
+      const href = prefer.href;
+      return href.startsWith('http') ? href : `https://www.ekiten.jp${href}`;
     }
   }
 
-  // マイページ内の全リンクをダンプしてデバッグ
-  const allLinks = await page.locator('a[href]').evaluateAll(
-    els => els.map(e => ({ text: e.innerText.trim().slice(0, 30), href: e.getAttribute('href') }))
+  // 見つからない場合は診断用に認証済みページの全リンクをダンプ
+  const allLinks = await collectLinks();
+  const interesting = allLinks.filter(l =>
+    /blog|diary|manage|owner|toko|post|edit|article|mypage|shop_/.test(l.href) &&
+    !/get\.shop|gmocloud|shop-pro|makeshop/.test(l.href)
   );
-  const shopLinks = allLinks.filter(l => l.href && (l.href.includes('shop') || l.href.includes('blog') || l.href.includes('manage')));
-  console.log('ショップ関連リンク:', JSON.stringify(shopLinks.slice(0, 20), null, 2));
+  console.log('診断: 認証済みページの関連リンク:', JSON.stringify(interesting.slice(0, 40), null, 2));
 
-  throw new Error('ブログ投稿URLが見つかりません。スクショを確認してください。');
+  throw new Error('ブログ投稿URLが見つかりません。診断ログ/スクショを確認してください。');
 }
 
 export async function postToEkiten(article) {
