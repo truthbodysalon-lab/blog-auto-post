@@ -133,66 +133,42 @@ export async function ekitenLogin(page) {
 }
 
 export async function findBlogPostUrl(page) {
-  console.log('🔍 ブログ投稿URLを探索中...');
+  console.log('🔍 お知らせ投稿URLを探索中...');
+  // エキテンに「ブログ」機能は存在しない。オーナーが記事を公開できるのは
+  // 「お知らせ配信」= https://www.ekiten.jp/shop_<id>/info/ （= 実質のブログ）。
+  // ログイン後URLからショップIDを抽出して info ページを導出する。
+  const m = page.url().match(/shop_(\d+)/);
+  const shopId = m ? m[1] : null;
+  if (!shopId) {
+    await shot(page, 'ERROR-no-shopid');
+    throw new Error(`ショップIDが特定できません: ${page.url()}`);
+  }
+  const infoUrl = `https://www.ekiten.jp/shop_${shopId}/info/`;
+  console.log(`📰 お知らせ配信ページ: ${infoUrl}`);
 
-  // 全リンクから「お店ブログ/ブログ投稿」候補を抽出するヘルパー
-  const collectLinks = async () => page.locator('a[href]').evaluateAll(
-    els => els.map(e => ({ text: (e.innerText || '').trim().slice(0, 40), href: e.getAttribute('href') }))
-      .filter(l => l.href && /ekiten\.jp/.test(l.href.startsWith('http') ? l.href : `https://www.ekiten.jp${l.href}`))
-  );
-  const isBlogCandidate = (l) =>
-    l.href && /blog|diary|お店ブログ/.test(l.href + ' ' + l.text) &&
-    !/get\.shop|gmocloud|shop-pro|makeshop/.test(l.href);
-
-  // ログイン後の認証済みオーナーページ群を順に探索（/mypage/ は404のため使わない）
-  const ownerLandings = [
-    page.url(),                                   // ログイン直後のショップオーナーページ
-    'https://www.ekiten.jp/shop_owner/',
-    'https://owner.ekiten.jp/',
-  ];
-
-  for (const landing of ownerLandings) {
-    try {
-      if (page.url() !== landing) {
-        await page.goto(landing, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        await page.waitForTimeout(2000);
-      }
-    } catch { continue; }
-    await shot(page, '05-owner-' + landing.replace(/[^a-z0-9]/gi, '_').slice(-24));
-
-    // 最初の認証済みランディングでは全リンク・全ボタンを診断ダンプ（オーナーツールバー把握用）
-    if (landing === ownerLandings[0]) {
-      const everyLink = await page.locator('a[href]').evaluateAll(
-        els => els.map(e => ({ t: (e.innerText || '').trim().slice(0, 30), h: e.getAttribute('href') }))
-          .filter(l => l.h && !/^(#|javascript:|mailto:)/.test(l.h) && !/group\.gmo|globalsign|gmo-cyber|flatt\.tech|brandsecurity/.test(l.h))
-      );
-      console.log(`診断[${landing}] 全リンク(${everyLink.length}):`, JSON.stringify(everyLink.slice(0, 80)));
-      const everyBtn = await page.locator('button, [role="button"]').evaluateAll(
-        els => els.map(e => (e.innerText || e.getAttribute('aria-label') || '').trim().slice(0, 30)).filter(Boolean)
-      );
-      console.log(`診断[${landing}] ボタン:`, JSON.stringify(everyBtn.slice(0, 40)));
-    }
-
-    const links = await collectLinks();
-    const candidates = links.filter(isBlogCandidate);
-    if (candidates.length) {
-      console.log('ブログ候補リンク:', JSON.stringify(candidates.slice(0, 15), null, 2));
-      // 新規投稿系を優先
-      const prefer = candidates.find(l => /new|create|post|add|regist|toko/.test(l.href)) || candidates[0];
-      const href = prefer.href;
-      return href.startsWith('http') ? href : `https://www.ekiten.jp${href}`;
-    }
+  // 読み取り専用の診断: お知らせページのフォーム/入力欄/ボタンをダンプ（送信はしない）
+  if (process.env.EKITEN_DISCOVER === '1') {
+    await page.goto(infoUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(2500);
+    await shot(page, '05-info-page');
+    const inputs = await page.locator('input, textarea, [contenteditable="true"]').evaluateAll(
+      els => els.map(e => ({
+        tag: e.tagName.toLowerCase(), type: e.getAttribute('type'),
+        name: e.getAttribute('name'), id: e.id,
+        ph: e.getAttribute('placeholder'), cls: (e.className || '').slice(0, 30),
+        visible: !!(e.offsetParent),
+      }))
+    );
+    console.log('診断[info] 入力欄:', JSON.stringify(inputs));
+    const btns = await page.locator('button, input[type="submit"], a[role="button"], [role="button"]').evaluateAll(
+      els => els.map(e => ({ t: (e.innerText || e.value || '').trim().slice(0, 24), h: e.getAttribute('href') }))
+        .filter(b => b.t)
+    );
+    console.log('診断[info] ボタン:', JSON.stringify(btns.slice(0, 40)));
+    throw new Error('DISCOVERモード: お知らせフォーム診断のみ実行（投稿はしていません）');
   }
 
-  // 見つからない場合は診断用に認証済みページの全リンクをダンプ
-  const allLinks = await collectLinks();
-  const interesting = allLinks.filter(l =>
-    /blog|diary|manage|owner|toko|post|edit|article|mypage|shop_/.test(l.href) &&
-    !/get\.shop|gmocloud|shop-pro|makeshop/.test(l.href)
-  );
-  console.log('診断: 認証済みページの関連リンク:', JSON.stringify(interesting.slice(0, 40), null, 2));
-
-  throw new Error('ブログ投稿URLが見つかりません。診断ログ/スクショを確認してください。');
+  return infoUrl;
 }
 
 export async function postToEkiten(article) {

@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '7 9 * * *'    # 毎日 18:07 JST (= 09:07 UTC) ← HPブログ10本終了後
   workflow_dispatch:        # 手動実行も可能
+    inputs:
+      discover:
+        description: 'お知らせフォーム診断のみ(投稿しない)。1で有効'
+        required: false
+        default: '0'
 
 jobs:
   post:
@@ -41,6 +46,7 @@ jobs:
           EKITEN_PASSWORD: ${{ secrets.EKITEN_PASSWORD }}
           GEMINI_API_KEY:  ${{ secrets.GEMINI_API_KEY }}
           MODE: headless
+          EKITEN_DISCOVER: ${{ github.event.inputs.discover || '0' }}
 
       - name: Upload debug screenshots on failure
         if: failure()
