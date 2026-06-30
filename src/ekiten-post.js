@@ -123,6 +123,12 @@ export async function ekitenLogin(page) {
     await shot(page, 'ERROR-login-failed');
     throw new Error(`ログイン失敗: ${currentUrl}`);
   }
+  // URLが遷移しても 403/404/エラーページが返る場合があるため本文も確認
+  const bodyText = await page.locator('body').innerText().catch(() => '');
+  if (/40[34]\s*(Forbidden|Not Found)|アクセスできない|見つかりませんでした/.test(bodyText)) {
+    await shot(page, 'ERROR-login-blocked');
+    throw new Error(`ログイン後にブロックページ検出 (${currentUrl}): ${bodyText.slice(0, 80)}`);
+  }
   console.log('✅ ログイン成功');
 }
 
@@ -187,6 +193,11 @@ export async function postToEkiten(article) {
   const context = await browser.newContext({
     viewport: { width: 1400, height: 900 },
     locale: 'ja-JP',
+    // 既定の HeadlessChrome UA はWAFに403で弾かれるため、実ブラウザ相当のUAを明示
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    extraHTTPHeaders: {
+      'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8',
+    },
   });
   const page = await context.newPage();
 
