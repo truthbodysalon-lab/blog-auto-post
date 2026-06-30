@@ -208,100 +208,87 @@ export async function postToEkiten(article) {
 
   try {
     await ekitenLogin(page);
-    const blogUrl = await findBlogPostUrl(page);
-    console.log(`📝 ブログ投稿URL: ${blogUrl}`);
+    const infoUrl = await findBlogPostUrl(page);
+    console.log(`📝 お知らせ配信URL: ${infoUrl}`);
 
-    await page.goto(blogUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.goto(infoUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(2000);
-    await shot(page, '06-blog-form');
+    await shot(page, '06-info-page');
 
-    // タイトル入力
-    const titleSelectors = [
-      'input[name="title"]',
-      'input[placeholder*="タイトル"]',
-      'input[id*="title"]',
-      '#blog_title',
-      'input[type="text"]',
-    ];
-    let titleInput = null;
-    for (const sel of titleSelectors) {
-      const el = page.locator(sel).first();
-      if (await el.count() > 0 && await el.isVisible().catch(() => false)) {
-        titleInput = el;
-        console.log(`✅ タイトル入力欄: ${sel}`);
-        break;
-      }
+    // エキテンに「ブログ」は無い。お知らせは「お知らせを追加する」→モーダル入力→確認→追加 のフロー。
+    // モーダルを開く
+    const addBtn = page.locator(
+      'button:has-text("お知らせを追加する"), [role="button"]:has-text("お知らせを追加する")'
+    ).first();
+    if (!(await addBtn.count())) throw new Error('「お知らせを追加する」ボタンが見つかりません');
+    await addBtn.scrollIntoViewIfNeeded().catch(() => {});
+    await addBtn.click();
+    await page.waitForTimeout(2500);
+    await shot(page, '07-modal-open');
+
+    // タイトル（モーダル内: input[name="title"]）
+    const titleInput = page.locator('input[name="title"]').first();
+    if (!(await titleInput.count() && await titleInput.isVisible().catch(() => false))) {
+      throw new Error('お知らせタイトル入力欄(input[name=title])が見つかりません');
     }
-    if (!titleInput) throw new Error('タイトル入力欄が見つかりません');
     await titleInput.fill(article.title);
 
-    // 本文入力
-    const bodySelectors = [
-      'textarea[name="body"]',
-      'textarea[name="content"]',
-      'textarea[id*="body"]',
-      'textarea[id*="content"]',
-      '#blog_body',
-      '.ql-editor',        // Quill editor
-      '[contenteditable="true"]',
-      'textarea',
-    ];
-    let bodyInput = null;
-    for (const sel of bodySelectors) {
-      const el = page.locator(sel).first();
-      if (await el.count() > 0 && await el.isVisible().catch(() => false)) {
-        bodyInput = el;
-        console.log(`✅ 本文入力欄: ${sel}`);
-        break;
-      }
-    }
-    if (!bodyInput) throw new Error('本文入力欄が見つかりません');
-
-    // プレーンテキストで投稿（HTMLタグを除去）
-    const plainBody = article.bodyText || article.bodyHtml
+    // 本文（モーダル内: textarea[name="content1"]）。プレーンテキスト化
+    const plainBody = (article.bodyText || article.bodyHtml || '')
       .replace(/<[^>]+>/g, '')
       .replace(/&[a-z]+;/gi, ' ')
-      .replace(/\s{2,}/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
       .trim();
-
-    await bodyInput.fill(plainBody);
-    await shot(page, '07-filled-form');
-
-    // 投稿ボタン
-    const submitSelectors = [
-      'button:has-text("投稿")',
-      'button:has-text("公開")',
-      'button:has-text("保存")',
-      'input[value="投稿"]',
-      'input[value="公開"]',
-      'button[type="submit"]',
-    ];
-    let postBtn = null;
-    for (const sel of submitSelectors) {
-      const el = page.locator(sel).first();
-      if (await el.count() > 0 && await el.isVisible().catch(() => false)) {
-        postBtn = el;
-        console.log(`✅ 投稿ボタン: ${sel}`);
-        break;
-      }
+    const bodyInput = page.locator('textarea[name="content1"]').first();
+    if (!(await bodyInput.count() && await bodyInput.isVisible().catch(() => false))) {
+      throw new Error('お知らせ本文欄(textarea[name=content1])が見つかりません');
     }
-    if (!postBtn) throw new Error('投稿ボタンが見つかりません');
+    await bodyInput.fill(plainBody);
 
+    // 公開ステータスを「公開」に（publicStatus ラジオの先頭=公開想定。既定が公開ならそのまま）
+    const pubRadio = page.locator('input[name="publicStatus"]').first();
+    if (await pubRadio.count() > 0) {
+      await pubRadio.check().catch(() => {});
+    }
+    await shot(page, '08-filled-form');
+
+    // 安全ガード: EKITEN_LIVE=1 のときのみ実際に公開する。
+    // （エキテンの「お知らせ」は店舗公開ページに即時掲載される対外アクションのため、
+    //   明示的にオーナーが有効化するまで送信しない。既定は確認画面手前で停止＝無投稿）
+    if (process.env.EKITEN_LIVE !== '1') {
+      await shot(page, '09-dryrun-stop');
+      console.log('🟡 DRY-RUN: EKITEN_LIVE!=1 のため確認/追加を実行せず終了（お知らせは公開していません）');
+      return { success: false, dryRun: true, title: article.title };
+    }
+
+    // 確認 → 追加（公開）
+    const confirmBtn = page.locator('button:has-text("確認"), input[value="確認"]').first();
+    if (await confirmBtn.count() > 0 && await confirmBtn.isVisible().catch(() => false)) {
+      await confirmBtn.click();
+      await page.waitForTimeout(2500);
+      await shot(page, '09-confirm');
+    }
     const beforeUrl = page.url();
-    await postBtn.click();
+    const publishBtn = page.locator(
+      'button:has-text("追加する"), button:has-text("投稿"), button:has-text("公開"), input[value="追加する"]'
+    ).first();
+    if (!(await publishBtn.count())) throw new Error('公開(追加する)ボタンが見つかりません');
+    await publishBtn.click();
     await page.waitForLoadState('domcontentloaded').catch(() => {});
     await page.waitForTimeout(3000);
-    await shot(page, '08-after-post');
+    await shot(page, '10-after-post');
 
     const afterUrl = page.url();
-    const success = afterUrl !== beforeUrl || (await page.locator(':has-text("投稿しました"), :has-text("公開しました"), :has-text("保存しました")').count() > 0);
+    const success = (await page.locator(
+      ':has-text("追加しました"), :has-text("投稿しました"), :has-text("公開しました"), :has-text("登録しました")'
+    ).count() > 0) || afterUrl !== beforeUrl;
 
     if (success) {
-      console.log(`✅ エキテン投稿完了: ${article.title}`);
+      console.log(`✅ エキテンお知らせ公開完了: ${article.title}`);
       return { success: true, url: afterUrl };
     } else {
       await shot(page, 'ERROR-post-uncertain');
-      console.warn(`⚠️ 投稿結果不明 (URL変化なし): ${afterUrl}`);
+      console.warn(`⚠️ お知らせ結果不明: ${afterUrl}`);
       return { success: false, url: afterUrl };
     }
 

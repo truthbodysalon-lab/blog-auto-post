@@ -9,6 +9,10 @@ on:
         description: 'お知らせフォーム診断のみ(投稿しない)。1で有効'
         required: false
         default: '0'
+      live:
+        description: '実際にお知らせを公開する。1で有効(対外公開)'
+        required: false
+        default: '0'
 
 jobs:
   post:
@@ -47,6 +51,8 @@ jobs:
           GEMINI_API_KEY:  ${{ secrets.GEMINI_API_KEY }}
           MODE: headless
           EKITEN_DISCOVER: ${{ github.event.inputs.discover || '0' }}
+          # 対外公開ガード: 手動実行のlive=1、またはリポジトリ変数 EKITEN_LIVE=1 で有効化
+          EKITEN_LIVE: ${{ github.event.inputs.live || vars.EKITEN_LIVE || '0' }}
 
       - name: Upload debug screenshots on failure
         if: failure()

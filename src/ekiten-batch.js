@@ -51,6 +51,8 @@ async function main() {
         recordSubtopicCovered(article.clusterKey, article.subtopicId);
         writeLog('INFO', `クラスター記録: ${article.clusterKey}/${article.subtopicId}`);
       }
+    } else if (result.dryRun) {
+      writeLog('INFO', `🟡 DRY-RUN完了(お知らせ未公開): ${article.title}。公開するには EKITEN_LIVE=1 を設定`);
     } else {
       writeLog('WARN', `⚠️ 投稿結果不明: ${result.url}`);
     }
