@@ -151,20 +151,34 @@ export async function findBlogPostUrl(page) {
     await page.goto(infoUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(2500);
     await shot(page, '05-info-page');
-    const inputs = await page.locator('input, textarea, [contenteditable="true"]').evaluateAll(
-      els => els.map(e => ({
-        tag: e.tagName.toLowerCase(), type: e.getAttribute('type'),
-        name: e.getAttribute('name'), id: e.id,
-        ph: e.getAttribute('placeholder'), cls: (e.className || '').slice(0, 30),
-        visible: !!(e.offsetParent),
-      }))
-    );
-    console.log('診断[info] 入力欄:', JSON.stringify(inputs));
-    const btns = await page.locator('button, input[type="submit"], a[role="button"], [role="button"]').evaluateAll(
-      els => els.map(e => ({ t: (e.innerText || e.value || '').trim().slice(0, 24), h: e.getAttribute('href') }))
-        .filter(b => b.t)
-    );
-    console.log('診断[info] ボタン:', JSON.stringify(btns.slice(0, 40)));
+    const dumpInputs = async (label) => {
+      const inputs = await page.locator('input, textarea, [contenteditable="true"]').evaluateAll(
+        els => els.map(e => ({
+          tag: e.tagName.toLowerCase(), type: e.getAttribute('type'),
+          name: e.getAttribute('name'), id: e.id,
+          ph: e.getAttribute('placeholder'), cls: (e.className || '').slice(0, 30),
+          visible: !!(e.offsetParent),
+        })).filter(x => x.visible)
+      );
+      console.log(`診断[${label}] 可視入力欄:`, JSON.stringify(inputs));
+    };
+    await dumpInputs('info');
+
+    // 「お知らせを追加する」を押すとモーダル/フォームが開く想定。クリックして再ダンプ（送信はしない）
+    const addBtn = page.locator('button:has-text("お知らせを追加する"), [role="button"]:has-text("お知らせを追加する")').first();
+    if (await addBtn.count() > 0) {
+      await addBtn.scrollIntoViewIfNeeded().catch(() => {});
+      await addBtn.click().catch(() => {});
+      await page.waitForTimeout(2500);
+      await shot(page, '06-after-add-click');
+      await dumpInputs('after-add');
+      const modalBtns = await page.locator('button, input[type="submit"], [role="button"]').evaluateAll(
+        els => els.filter(e => e.offsetParent).map(e => (e.innerText || e.value || '').trim().slice(0, 24)).filter(Boolean)
+      );
+      console.log('診断[after-add] 可視ボタン:', JSON.stringify(modalBtns.slice(0, 40)));
+    } else {
+      console.log('⚠️「お知らせを追加する」ボタンが見つからない');
+    }
     throw new Error('DISCOVERモード: お知らせフォーム診断のみ実行（投稿はしていません）');
   }
 
