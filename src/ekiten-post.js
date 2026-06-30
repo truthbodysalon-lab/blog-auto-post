@@ -46,9 +46,14 @@ export async function ekitenLogin(page) {
   await shot(page, '02-after-tab-click');
 
   // メールアドレス入力欄を探す
+  // 実際のエキテンログイン欄は <input type="text" name="mailaddress">（type=emailでもidでもない）
   const emailSelectors = [
     'input[type="email"]',
     'input[name="email"]',
+    'input[name="mailaddress"]',
+    'input[name*="mail"]',
+    'input[autocomplete="email"]',
+    'input[autocomplete="username"]',
     'input[placeholder*="メール"]',
     'input[id*="email"]',
     'input[id*="mail"]',
@@ -60,6 +65,17 @@ export async function ekitenLogin(page) {
       emailInput = el;
       console.log(`✅ メール入力欄: ${sel}`);
       break;
+    }
+  }
+  // フォールバック: 上記で見つからなければ「password以外の最初の可視テキスト入力」を採用
+  // （サイトの属性変更に強くするための保険）
+  if (!emailInput) {
+    const candidate = page.locator(
+      'input:not([type="password"]):not([type="hidden"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not([type="button"])'
+    ).first();
+    if (await candidate.count() > 0 && await candidate.isVisible().catch(() => false)) {
+      emailInput = candidate;
+      console.log('✅ メール入力欄: フォールバック(password以外の最初の可視input)');
     }
   }
   if (!emailInput) {
