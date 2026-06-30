@@ -160,6 +160,19 @@ export async function findBlogPostUrl(page) {
     } catch { continue; }
     await shot(page, '05-owner-' + landing.replace(/[^a-z0-9]/gi, '_').slice(-24));
 
+    // 最初の認証済みランディングでは全リンク・全ボタンを診断ダンプ（オーナーツールバー把握用）
+    if (landing === ownerLandings[0]) {
+      const everyLink = await page.locator('a[href]').evaluateAll(
+        els => els.map(e => ({ t: (e.innerText || '').trim().slice(0, 30), h: e.getAttribute('href') }))
+          .filter(l => l.h && !/^(#|javascript:|mailto:)/.test(l.h) && !/group\.gmo|globalsign|gmo-cyber|flatt\.tech|brandsecurity/.test(l.h))
+      );
+      console.log(`診断[${landing}] 全リンク(${everyLink.length}):`, JSON.stringify(everyLink.slice(0, 80)));
+      const everyBtn = await page.locator('button, [role="button"]').evaluateAll(
+        els => els.map(e => (e.innerText || e.getAttribute('aria-label') || '').trim().slice(0, 30)).filter(Boolean)
+      );
+      console.log(`診断[${landing}] ボタン:`, JSON.stringify(everyBtn.slice(0, 40)));
+    }
+
     const links = await collectLinks();
     const candidates = links.filter(isBlogCandidate);
     if (candidates.length) {
