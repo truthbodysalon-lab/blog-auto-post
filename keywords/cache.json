@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-07-12T10:56:59.770Z",
-  "totalKeywords": 224,
+  "updatedAt": "2026-07-19T05:20:56.536Z",
+  "totalKeywords": 223,
   "bySymptom": {
     "肩こり": [
       {
@@ -659,7 +659,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 千葉",
+        "term": "ストレートネック 整体 治らない",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -670,7 +670,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 名古屋",
+        "term": "ストレートネック 整体 大阪",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -695,7 +695,7 @@
         "score": 81
       },
       {
-        "term": "長岡市 整体 骨盤矯正",
+        "term": "長岡市 整体+骨盤矯正",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
@@ -728,7 +728,7 @@
         "score": 60
       },
       {
-        "term": "長岡 整体 骨盤 矯正",
+        "term": "長岡 整体 骨盤矯正",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
