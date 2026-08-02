@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-26T11:02:26.329Z",
+  "updatedAt": "2026-08-02T05:25:17.531Z",
   "totalKeywords": 223,
   "bySymptom": {
     "肩こり": [
@@ -206,16 +206,16 @@
         "score": 56
       },
       {
-        "term": "肩こり 整体 マッサージ",
+        "term": "肩こり 整体 整骨院",
         "coreSymptom": "肩こり",
         "sources": [
           "autocomplete",
           "aramaki"
         ],
-        "volume": 64,
+        "volume": 34,
         "isLocal": false,
         "isTarget": true,
-        "score": 27
+        "score": 24
       },
       {
         "term": "肩こり 整体 おすすめ",
@@ -604,7 +604,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 整骨 どっち",
+        "term": "ストレートネック 整体で治る",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -615,7 +615,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体で治る",
+        "term": "ストレートネック 整体 整骨 どっち",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -637,7 +637,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 東京",
+        "term": "ストレートネック 整体 値段",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -648,7 +648,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 値段",
+        "term": "ストレートネック 整体 東京",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
