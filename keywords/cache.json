@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-02T11:01:40.857Z",
+  "updatedAt": "2026-08-09T03:31:35.003Z",
   "totalKeywords": 223,
   "bySymptom": {
     "肩こり": [
@@ -238,7 +238,7 @@
           "anchor",
           "aramaki"
         ],
-        "volume": 2960,
+        "volume": 1320,
         "isLocal": false,
         "isTarget": true,
         "score": 81
