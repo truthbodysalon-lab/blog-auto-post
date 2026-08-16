@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-08-09T10:08:34.948Z",
-  "totalKeywords": 223,
+  "updatedAt": "2026-08-16T02:57:53.626Z",
+  "totalKeywords": 224,
   "bySymptom": {
     "肩こり": [
       {
@@ -206,16 +206,16 @@
         "score": 56
       },
       {
-        "term": "肩こり 整体 整骨院",
+        "term": "肩こり 整体 マッサージ",
         "coreSymptom": "肩こり",
         "sources": [
           "autocomplete",
           "aramaki"
         ],
-        "volume": 34,
+        "volume": 64,
         "isLocal": false,
         "isTarget": true,
-        "score": 24
+        "score": 27
       },
       {
         "term": "肩こり 整体 おすすめ",
@@ -615,17 +615,6 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 整骨 どっち",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": false,
-        "isTarget": true,
-        "score": 21
-      },
-      {
         "term": "ストレートネック 整体 おすすめ",
         "coreSymptom": "姿勢",
         "sources": [
@@ -648,17 +637,6 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 東京",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": false,
-        "isTarget": true,
-        "score": 21
-      },
-      {
         "term": "ストレートネック 整体 治らない",
         "coreSymptom": "姿勢",
         "sources": [
@@ -670,7 +648,29 @@
         "score": 21
       },
       {
+        "term": "ストレートネック 整体 東京",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
         "term": "ストレートネック 整体 大阪",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体 保険適用",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -849,17 +849,6 @@
         "score": 2
       },
       {
-        "term": "産後 骨盤矯正 ガードル",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": false,
-        "isTarget": false,
-        "score": 2
-      },
-      {
         "term": "産後 骨盤矯正 意味ない",
         "coreSymptom": "骨盤矯正",
         "sources": [
@@ -882,6 +871,17 @@
         "score": 2
       },
       {
+        "term": "産後 骨盤矯正 保険適用",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
         "term": "産後 骨盤矯正 近く",
         "coreSymptom": "骨盤矯正",
         "sources": [
@@ -893,7 +893,7 @@
         "score": 2
       },
       {
-        "term": "産後 骨盤矯正 ベルト",
+        "term": "産後 骨盤矯正 ガードル",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
