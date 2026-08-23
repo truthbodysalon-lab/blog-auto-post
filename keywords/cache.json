@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-08-16T09:54:54.270Z",
-  "totalKeywords": 224,
+  "updatedAt": "2026-08-23T03:00:27.955Z",
+  "totalKeywords": 225,
   "bySymptom": {
     "肩こり": [
       {
@@ -626,6 +626,17 @@
         "score": 21
       },
       {
+        "term": "ストレートネック 整体 治らない",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
         "term": "ストレートネック 整体 値段",
         "coreSymptom": "姿勢",
         "sources": [
@@ -637,7 +648,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 治らない",
+        "term": "ストレートネック 整体 保険適用",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -668,17 +679,6 @@
         "isLocal": false,
         "isTarget": true,
         "score": 21
-      },
-      {
-        "term": "ストレートネック 整体 保険適用",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": false,
-        "isTarget": true,
-        "score": 21
       }
     ],
     "骨盤矯正": [
@@ -695,7 +695,7 @@
         "score": 81
       },
       {
-        "term": "長岡市 整体+骨盤矯正",
+        "term": "長岡市 整体 骨盤矯正",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
@@ -728,7 +728,7 @@
         "score": 60
       },
       {
-        "term": "長岡 整体 骨盤矯正",
+        "term": "長岡 整体 骨盤 矯正",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
@@ -893,7 +893,7 @@
         "score": 2
       },
       {
-        "term": "産後 骨盤矯正 ガードル",
+        "term": "産後 骨盤矯正 ベルト",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
