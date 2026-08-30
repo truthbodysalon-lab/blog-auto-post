@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-23T09:55:49.057Z",
+  "updatedAt": "2026-08-30T07:48:24.243Z",
   "totalKeywords": 225,
   "bySymptom": {
     "肩こり": [
@@ -648,7 +648,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 保険適用",
+        "term": "ストレートネック 整体 東京",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -659,7 +659,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 東京",
+        "term": "ストレートネック 整体 保険適用",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -695,7 +695,7 @@
         "score": 81
       },
       {
-        "term": "長岡市 整体 骨盤矯正",
+        "term": "長岡市 整体+骨盤矯正",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
@@ -728,7 +728,7 @@
         "score": 60
       },
       {
-        "term": "長岡 整体 骨盤 矯正",
+        "term": "長岡 整体 骨盤矯正",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
