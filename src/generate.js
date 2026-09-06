@@ -78,7 +78,7 @@ export async function generateArticleForTopic(topic, retryCount = 0) {
   // 無料枠はモデルごとに別々の1日上限。429時に別モデルへ自動フォールバックして枯渇を回避
   const modelCandidates = [
     process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-    'gemini-2.0-flash',
+    'gemini-3.6-flash',   // 2026-09-06: 2.0-flashは404廃止（9/3に429→404で全件失敗）。APIが案内する後継へ
     'gemini-2.5-flash-lite',
   ].filter((m, i, a) => a.indexOf(m) === i);
   const makeModel = (name) => genAI.getGenerativeModel({

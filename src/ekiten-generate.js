@@ -27,7 +27,7 @@ async function callGemini(prompt) {
   // （generate.js と同じ戦略。2.0-flashが limit:0 で枯渇するため2.5-flash優先）
   const modelCandidates = [
     process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-    'gemini-2.0-flash',
+    'gemini-3.6-flash',   // 2026-09-06: 2.0-flashは404廃止（9/3に429→404で全件失敗）。APIが案内する後継へ
     'gemini-2.5-flash-lite',
   ].filter((m, i, a) => a.indexOf(m) === i);
   const makeModel = (name) => genAI.getGenerativeModel({
