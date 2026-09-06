@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-08-30T14:32:48.159Z",
-  "totalKeywords": 225,
+  "updatedAt": "2026-09-06T06:48:44.051Z",
+  "totalKeywords": 224,
   "bySymptom": {
     "肩こり": [
       {
@@ -648,17 +648,6 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 東京",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": false,
-        "isTarget": true,
-        "score": 21
-      },
-      {
         "term": "ストレートネック 整体 保険適用",
         "coreSymptom": "姿勢",
         "sources": [
@@ -670,7 +659,18 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 大阪",
+        "term": "ストレートネック 整体 東京",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体 整骨 どっち 知恵袋",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
