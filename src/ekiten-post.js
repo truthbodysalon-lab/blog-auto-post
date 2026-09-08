@@ -113,7 +113,14 @@ export async function ekitenLogin(page) {
   if (!submitted) throw new Error('ログインボタンが見つかりません');
 
   await page.waitForLoadState('domcontentloaded').catch(() => {});
-  await page.waitForTimeout(3000);
+  // ログイン処理は非同期(SPA)で、送信直後はまだスピナー表示中のことがある。
+  // 固定3秒待機だと本番のレスポンス遅延時に「/login のまま」と誤検知して
+  // 正しいログインでも失敗扱いになる(2026-09-07に発生)。
+  // 最大10秒、URLが /login から変わるまで500ms間隔でポーリングする。
+  for (let i = 0; i < 20; i++) {
+    if (!page.url().includes('/login')) break;
+    await page.waitForTimeout(500);
+  }
   await shot(page, '04-after-login');
 
   // ログイン確認
