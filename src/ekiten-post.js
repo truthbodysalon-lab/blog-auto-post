@@ -230,12 +230,24 @@ export async function postToEkiten(article) {
     if (!(await addBtn.count())) throw new Error('「お知らせを追加する」ボタンが見つかりません');
     await addBtn.scrollIntoViewIfNeeded().catch(() => {});
     await addBtn.click();
-    await page.waitForTimeout(2500);
+    // モーダルはクリック直後、中身がAJAXで非同期ロードされグレー画面+スピナー表示の
+    // ままのことがある。固定2.5秒待機だと本番のレスポンス遅延時に「タイトル欄が
+    // 見つからない」と誤検知し、実際にはモーダルが正しく開いているのに失敗扱いに
+    // なる(2026-09-09に発生・run 34358426244)。ログイン後ポーリング(f5acd48)と同じ
+    // 対処を、モーダルの表示待ちにも適用する: input[name="title"]が表示されるまで
+    // 最大15秒、500ms間隔でポーリングする。
+    const titleInput = page.locator('input[name="title"]').first();
+    let modalReady = false;
+    for (let i = 0; i < 30; i++) {
+      if (await titleInput.count() && await titleInput.isVisible().catch(() => false)) {
+        modalReady = true;
+        break;
+      }
+      await page.waitForTimeout(500);
+    }
     await shot(page, '07-modal-open');
 
-    // タイトル（モーダル内: input[name="title"]）
-    const titleInput = page.locator('input[name="title"]').first();
-    if (!(await titleInput.count() && await titleInput.isVisible().catch(() => false))) {
+    if (!modalReady) {
       throw new Error('お知らせタイトル入力欄(input[name=title])が見つかりません');
     }
     await titleInput.fill(article.title);
