@@ -49,6 +49,8 @@ jobs:
           EKITEN_EMAIL:    ${{ secrets.EKITEN_EMAIL }}
           EKITEN_PASSWORD: ${{ secrets.EKITEN_PASSWORD }}
           GEMINI_API_KEY:  ${{ secrets.GEMINI_API_KEY }}
+          # 2026-09-15 Gemini無料枠の再配分: generate.jsと同一パターン・同一無料枠のため統一
+          GEMINI_MODEL: gemini-3.8-flash
           MODE: headless
           EKITEN_DISCOVER: ${{ github.event.inputs.discover || '0' }}
           # 対外公開ガード: 手動実行のlive=1、またはリポジトリ変数 EKITEN_LIVE=1 で有効化

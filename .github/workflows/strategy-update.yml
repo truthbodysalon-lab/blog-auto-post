@@ -71,12 +71,9 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         continue-on-error: true
 
-      # Step 3: 旧content-analyzerも続行（互換性維持）
-      - name: Run content analyzer (旧)
-        run: node src/content-analyzer.js
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        continue-on-error: true
+      # 2026-09-15 Gemini無料枠の再配分: 旧content-analyzer(週0.71件/日相当)を削除。
+      # seo-audit.jsが同じcontent-strategy.jsonを直後に上書きしており、topics.jsが読む
+      # updatedAt/underusedAngles/overusedPatterns/trendingTopicsは全てseo-audit.js側でカバー済み（重複呼び出しのみ削減）
 
       # 更新されたファイルをcommit
       - name: Commit updated strategy & cache
