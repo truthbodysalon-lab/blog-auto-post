@@ -4,6 +4,43 @@ import path from 'path';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getRecentTitles, isDuplicateTitle } from './topics.js';
 
+/**
+ * JSON文字列リテラル内に混入した生の制御文字（改行・タブ等）だけをエスケープする。
+ * 文字列の外側（オブジェクトの整形用改行など）は合法なJSON空白なので変更しない。
+ * 2026-09-14: gemini-3.6-flash応答で発生した
+ * 「Bad control character in string literal in JSON」対策。
+ */
+function sanitizeJsonControlChars(text) {
+  let inString = false;
+  let escaped = false;
+  let out = '';
+  for (const ch of text) {
+    if (inString) {
+      if (escaped) {
+        out += ch;
+        escaped = false;
+      } else if (ch === '\\') {
+        out += ch;
+        escaped = true;
+      } else if (ch === '"') {
+        out += ch;
+        inString = false;
+      } else if (ch.charCodeAt(0) < 0x20) {
+        if (ch === '\n') out += '\\n';
+        else if (ch === '\r') out += '\\r';
+        else if (ch === '\t') out += '\\t';
+        else out += ' ';
+      } else {
+        out += ch;
+      }
+    } else {
+      if (ch === '"') inString = true;
+      out += ch;
+    }
+  }
+  return out;
+}
+
 const MYFILES = '/Users/mt112/Desktop/my files/myfiles';
 
 const SALON_PROFILE = `
@@ -230,9 +267,18 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
   try {
     article = JSON.parse(text);
   } catch {
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error('JSONパース失敗:\n' + text.slice(0, 500));
-    article = JSON.parse(match[0]);
+    // 2026-09-14: gemini-3.6-flash（429フォールバック先）がbodyHtml文字列中に
+    // 未エスケープの制御文字（改行等）を混入させ「Bad control character in
+    // string literal」でパース失敗する事例を確認。文字列リテラル内の生の制御文字
+    // のみをエスケープして再試行する（文字列外の整形用改行はJSON構文上合法なので触らない）。
+    const sanitized = sanitizeJsonControlChars(text);
+    try {
+      article = JSON.parse(sanitized);
+    } catch {
+      const match = sanitized.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('JSONパース失敗:\n' + text.slice(0, 500));
+      article = JSON.parse(match[0]);
+    }
   }
 
   if (isDuplicateTitle(article.title) && retryCount < 2) {
