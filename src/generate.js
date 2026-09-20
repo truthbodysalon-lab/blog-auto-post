@@ -115,8 +115,10 @@ export async function generateArticleForTopic(topic, retryCount = 0) {
   // 無料枠はモデルごとに別々の1日上限。429時に別モデルへ自動フォールバックして枯渇を回避
   const modelCandidates = [
     process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-    'gemini-3.6-flash',   // 2026-09-06: 2.0-flashは404廃止（9/3に429→404で全件失敗）。APIが案内する後継へ
-    'gemini-2.5-flash-lite',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash',
+    'gemini-3.7-flash',
+    'gemini-2.5-flash',   // 2026-09-20: 廃止済みの 2.5-flash-lite(404) を外し、実在モデルだけで5段にした
   ].filter((m, i, a) => a.indexOf(m) === i);
   const makeModel = (name) => genAI.getGenerativeModel({
     model: name,
@@ -246,11 +248,14 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
       const isQuota = e.message?.includes('429') || e.message?.toLowerCase().includes('quota');
       const isRetryable = isQuota || e.message?.includes('503') || e.message?.includes('overloaded');
       // 1日上限(429)に当たったら、別のモデルへ切替（モデルごとに無料枠が別）
-      if (isQuota && modelIdx < modelCandidates.length - 1) {
+      // 2026-09-20: 503(高負荷)・404(モデル廃止)でも待たずに次のモデルへ切替える（3.8-flashの503で毎日1回失敗していた）
+      const isBusy = e.message?.includes('503') || e.message?.toLowerCase().includes('overloaded') || e.message?.toLowerCase().includes('high demand');
+      const isGone = e.message?.includes('404') || e.message?.toLowerCase().includes('no longer available');
+      if ((isQuota || isBusy || isGone) && modelIdx < modelCandidates.length - 1) {
         const prev = modelCandidates[modelIdx];
         modelIdx++;
         model = makeModel(modelCandidates[modelIdx]);
-        console.log(`⚠️ ${prev} が枠上限(429) → ${modelCandidates[modelIdx]} に切替えて再試行`);
+        console.log(`⚠️ ${prev} が ${isQuota ? '枠上限(429)' : isBusy ? '高負荷(503)' : '廃止(404)'} → ${modelCandidates[modelIdx]} に切替えて再試行`);
         await new Promise(r => setTimeout(r, 2000));
         continue;
       }
