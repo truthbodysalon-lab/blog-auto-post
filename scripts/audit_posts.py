@@ -14,7 +14,7 @@ def successes(run):
         if '[INFO] 投稿成功:' not in line: continue
         match=re.search(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z',line)
         if not match: raise RuntimeError('Publication timestamp missing')
-        published=dt.datetime.fromisoformat(match.group().replace('Z','+00:00'))
+        published=dt.datetime.fromisoformat(match.group()[:19]+'+00:00')
         if start <= published < end: total+=1
     return total
 
