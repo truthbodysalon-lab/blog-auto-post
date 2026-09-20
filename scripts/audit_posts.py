@@ -9,7 +9,14 @@ def runs():
     return json.loads(gh('run','list','--limit','200','--json','databaseId,workflowName,status,createdAt,displayTitle'))
 
 def successes(run):
-    return len(re.findall(r'\[INFO\] 投稿成功:',gh('run','view',str(run['databaseId']),'--log')))
+    total=0
+    for line in gh('run','view',str(run['databaseId']),'--log').splitlines():
+        if '[INFO] 投稿成功:' not in line: continue
+        match=re.search(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z',line)
+        if not match: raise RuntimeError('Publication timestamp missing')
+        published=dt.datetime.fromisoformat(match.group().replace('Z','+00:00'))
+        if start <= published < end: total+=1
+    return total
 
 now=dt.datetime.now(dt.timezone(dt.timedelta(hours=9)))
 day=(now-dt.timedelta(hours=6)).date()
@@ -20,7 +27,7 @@ if not 0 <= target <= 10: raise ValueError('target must be 0..10')
 count=0
 for run in runs():
     created=dt.datetime.fromisoformat(run['createdAt'].replace('Z','+00:00'))
-    if run['workflowName'] not in {'Blog Auto Post','Blog Auto Post Recovery'} or not start <= created < end: continue
+    if run['workflowName'] not in {'Blog Auto Post','Blog Auto Post Recovery'} or not start-dt.timedelta(days=1) <= created < end: continue
     if run['status']!='completed': raise RuntimeError('Publication still active; wait for next audit')
     count+=successes(run)
 print(f'{day}: confirmed publications {count}/{target}',flush=True)
