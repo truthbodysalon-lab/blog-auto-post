@@ -6,7 +6,7 @@ name: SEO Strategy Weekly Update
 
 on:
   schedule:
-    - cron: '0 2 * * 0'   # 毎週日曜 11:00 JST (= 02:00 UTC)
+    - cron: '20 7 * * 0'   # 日曜16:20 JST
   workflow_dispatch:
 
 # cache.json / content-strategy.json をコミット/pushするため書き込み権限が必要（403対策）

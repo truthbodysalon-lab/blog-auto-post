@@ -6,7 +6,7 @@ on:
     types: [completed]
 
 concurrency:
-  group: blog-post
+  group: blog-post-publication
   cancel-in-progress: false
 
 jobs:
