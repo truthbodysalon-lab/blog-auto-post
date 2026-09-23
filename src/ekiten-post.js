@@ -332,9 +332,41 @@ export async function postToEkiten(article) {
     await shot(page, '10-after-post');
 
     const afterUrl = page.url();
-    const success = (await page.locator(
+    console.log(`🔗 公開クリック後URL: ${afterUrl} (クリック前: ${beforeUrl})`);
+
+    // 成功判定: このお知らせ機能はURL遷移しないSPAモーダルのため、URL変化だけでは
+    // 判定できない(run 35821621616で「結果不明」になった原因)。次の3つのORで判定する。
+    // 1) 完了文言の出現（一瞬で消える可能性があるため補助的）
+    const completionText = await page.locator(
       ':has-text("追加しました"), :has-text("投稿しました"), :has-text("公開しました"), :has-text("登録しました")'
-    ).count() > 0) || afterUrl !== beforeUrl;
+    ).count() > 0;
+
+    // 2) モーダルが閉じたこと（送信成功時はフォームモーダルが閉じる想定）
+    const modalOpen = await page.locator(
+      '[aria-hidden="false"], .is-open, .modal--open, [class*="is-open"]'
+    ).count() > 0;
+    const modalClosed = !modalOpen;
+
+    // 3) 最も確実: お知らせ一覧(infoページ)を再読み込みし、今回のタイトル(先頭20字)が
+    // 実際に現れているかを確認する。getByText はセレクタ文字列への埋め込みが不要なため
+    // タイトルに引用符等の特殊文字が含まれても安全。
+    const titleSnippet = article.title.slice(0, 20);
+    let titleFoundInList = false;
+    try {
+      await page.goto(infoUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.waitForTimeout(2000);
+      titleFoundInList = await page.getByText(titleSnippet).count() > 0;
+    } catch (e) {
+      console.log(`⚠️ お知らせ一覧の再読込チェックに失敗: ${String(e).slice(0, 120)}`);
+    }
+    await shot(page, '11-info-recheck');
+
+    console.log(
+      `🔎 成功判定根拠: 完了文言=${completionText} / モーダル閉じた=${modalClosed} / ` +
+      `一覧にタイトル「${titleSnippet}」あり=${titleFoundInList} / URL変化=${afterUrl !== beforeUrl}(参考・単独では不採用)`
+    );
+
+    const success = completionText || modalClosed || titleFoundInList;
 
     if (success) {
       console.log(`✅ エキテンお知らせ公開完了: ${article.title}`);
