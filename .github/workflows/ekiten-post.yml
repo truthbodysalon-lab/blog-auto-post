@@ -34,9 +34,24 @@ jobs:
 
       - name: Install Chromium via apt
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y chromium-browser 2>/dev/null || sudo apt-get install -y chromium 2>/dev/null
-          CHROMIUM_BIN=$(which chromium-browser 2>/dev/null || which chromium 2>/dev/null)
+          # 2026-09-23: snapdのCDN一時障害(503)によるdpkg展開失敗の再発防止でリトライを追加(最大3回・15秒間隔)。
+          # インストール方法自体は変更していない(可逆・1ファイル・投稿挙動には影響なし)。
+          CHROMIUM_BIN=""
+          for i in 1 2 3; do
+            sudo apt-get update -qq
+            if sudo apt-get install -y chromium-browser 2>/dev/null || sudo apt-get install -y chromium 2>/dev/null; then
+              CHROMIUM_BIN=$(which chromium-browser 2>/dev/null || which chromium 2>/dev/null)
+            fi
+            if [ -n "${CHROMIUM_BIN}" ]; then
+              break
+            fi
+            echo "⚠️ Chromiumインストール失敗 (試行 ${i}/3)。15秒後にリトライします..."
+            sleep 15
+          done
+          if [ -z "${CHROMIUM_BIN}" ]; then
+            echo "❌ Chromiumインストールが3回リトライ後も失敗しました"
+            exit 1
+          fi
           echo "CHROMIUM_PATH=${CHROMIUM_BIN}" >> $GITHUB_ENV
           echo "✅ Chromium: ${CHROMIUM_BIN}"
 
