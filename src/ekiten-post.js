@@ -271,6 +271,39 @@ export async function postToEkiten(article) {
     }
     await shot(page, '08-filled-form');
 
+    // 診断専用: EKITEN_DISCOVER=2 のときは「確認」ボタンまでは押して確認画面の実DOMを
+    // ダンプするが、送信/追加ボタンには触れず必ず例外で終了する（EKITEN_LIVEの値に関わらず
+    // 対外公開はしない）。run 35822178813で3条件すべてfalseになり実際に非公開のままだった
+    // 原因（＝拾った「送信」ボタンが本当に正しい送信ボタンか）を無投稿で切り分けるための診断。
+    if (process.env.EKITEN_DISCOVER === '2') {
+      const confirmBtn2 = page
+        .locator('button:not([data-micromodal-trigger]):has-text("確認"), input[value*="確認"]')
+        .first();
+      if (await confirmBtn2.count() > 0 && await confirmBtn2.isVisible().catch(() => false)) {
+        await confirmBtn2.click().catch((e) => console.log(`⚠️ 確認クリック失敗: ${String(e).slice(0, 80)}`));
+        await page.waitForTimeout(2500);
+      } else {
+        console.log('ℹ️ 確認ボタンは見つからず');
+      }
+      await shot(page, 'DIAG-confirm-screen');
+      const detail = await page.locator('button, input[type="submit"], input[type="button"]').evaluateAll((els) => {
+        const vis = (e) => !!(e.offsetParent || e.getClientRects().length);
+        const txt = (e) => (e.innerText || e.value || '').replace(/\s+/g, '');
+        return els.map((e, i) => ({
+          i,
+          t: txt(e),
+          vis: vis(e),
+          tag: e.tagName.toLowerCase(),
+          cls: (e.className || '').toString().slice(0, 60),
+          ariaHidden: e.closest('[aria-hidden]')?.getAttribute('aria-hidden') ?? null,
+          modalAncestorCls: e.closest('[class*="modal"]')?.className?.toString().slice(0, 60) ?? null,
+          outer: (e.outerHTML || '').slice(0, 200),
+        })).filter((x) => x.t && x.vis);
+      });
+      console.log('🔬 診断[confirm]詳細ボタン一覧: ' + JSON.stringify(detail));
+      throw new Error('DIAGモード(EKITEN_DISCOVER=2): 確認画面まで到達・送信はしていません');
+    }
+
     // 安全ガード: EKITEN_LIVE=1 のときのみ実際に公開する。
     // （エキテンの「お知らせ」は店舗公開ページに即時掲載される対外アクションのため、
     //   明示的にオーナーが有効化するまで送信しない。既定は確認画面手前で停止＝無投稿）
