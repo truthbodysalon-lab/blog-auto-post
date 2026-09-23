@@ -54,7 +54,12 @@ async function main() {
     } else if (result.dryRun) {
       writeLog('INFO', `🟡 DRY-RUN完了(お知らせ未公開): ${article.title}。公開するには EKITEN_LIVE=1 を設定`);
     } else {
+      // 結果不明=非公開のまま終了した可能性が高い実質的な失敗。WARNログだけでexit 0
+      // にすると「ジョブsuccess」表示に紛れて見落とされる(run 35821621616/35822178813)ため、
+      // DRY-RUN(意図的な無投稿)とは区別してここだけ非ゼロ終了にする。
       writeLog('WARN', `⚠️ 投稿結果不明: ${result.url}`);
+      writeLog('ERROR', '投稿結果が確認できなかったため異常終了します(DRY-RUNではない)');
+      process.exit(1);
     }
   } catch (e) {
     writeLog('ERROR', `投稿失敗: ${e.message}`, { stack: e.stack?.slice(0, 300) });
