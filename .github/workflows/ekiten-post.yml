@@ -71,8 +71,8 @@ jobs:
           # 対外公開ガード: 手動実行のlive=1、またはリポジトリ変数 EKITEN_LIVE=1 で有効化
           EKITEN_LIVE: ${{ github.event.inputs.live || vars.EKITEN_LIVE || '0' }}
 
-      - name: Upload debug screenshots on failure
-        if: failure()
+      - name: Upload debug screenshots
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ekiten-debug-${{ github.run_id }}
