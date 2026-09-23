@@ -281,54 +281,47 @@ export async function postToEkiten(article) {
     }
 
     // 確認 → 追加（公開）
-    // 同上の理由で「確認」も完全一致＋micromodalトリガー除外にする（2026-09-23）
+    // 「確認」は部分一致のままにする（完全一致にしたら当たらず、確認画面に進めなくなった＝run 35821317722）。
+    // プラン訴求モーダルのトリガーだけ除外する。
     const confirmBtn = page
-      .locator('button:not([data-micromodal-trigger]):text-is("確認する"), button:not([data-micromodal-trigger]):text-is("確認"), input[type="submit"][value="確認する"], input[value="確認"]')
+      .locator('button:not([data-micromodal-trigger]):has-text("確認"), input[value*="確認"]')
       .first();
     if (await confirmBtn.count() > 0 && await confirmBtn.isVisible().catch(() => false)) {
-      await confirmBtn.click();
+      console.log('➡️ 確認ボタンをクリック');
+      await confirmBtn.click().catch((e) => console.log(`⚠️ 確認クリック失敗: ${String(e).slice(0, 80)}`));
       await page.waitForTimeout(2500);
       await shot(page, '09-confirm');
+    } else {
+      console.log('ℹ️ 確認ボタンは見つからず（確認ステップ無しのフローとみなす）');
     }
     const beforeUrl = page.url();
     // 2026-09-23: 旧実装は has-text の部分一致 + .first() だったため、確認画面ではなく
     // 右サイドバーの「アッププラン訴求モーダルを開くボタン」(data-micromodal-trigger付き)を
     // 掴み、クリック可能になるのを30秒待ってタイムアウトしていた（run 35820381407）。
     // 「投稿」「公開」は確認画面の本文（投稿者/公開ステータス）にも現れる語なので部分一致は使わない。
-    const btnDump = await page
-      .locator('button, input[type="submit"], input[type="button"], a[role="button"]')
-      .evaluateAll((els) =>
-        els
-          .map((e) => ({
-            tag: e.tagName,
-            text: (e.innerText || e.value || '').trim().slice(0, 30),
-            modal: e.getAttribute('data-micromodal-trigger') || '',
-            visible: !!(e.offsetParent || e.getClientRects().length),
-          }))
-          .filter((x) => x.text)
-      )
-      .catch(() => []);
-    console.log('🔎 確認画面のボタン候補: ' + JSON.stringify(btnDump).slice(0, 1200));
-
-    const publishSelectors = [
-      'button:not([data-micromodal-trigger]):text-is("追加する")',
-      'input[type="submit"][value="追加する"]',
-      'button:not([data-micromodal-trigger]):text-is("投稿する")',
-      'button:not([data-micromodal-trigger]):text-is("公開する")',
-      'button:not([data-micromodal-trigger]):text-is("登録する")',
-      'button:not([data-micromodal-trigger]):text-is("保存する")',
-      'input[type="submit"][value*="追加"]',
-    ];
-    let publishBtn = null;
-    for (const sel of publishSelectors) {
-      const el = page.locator(sel).first();
-      if ((await el.count()) && (await el.isVisible().catch(() => false))) {
-        publishBtn = el;
-        console.log(`✅ 公開ボタン: ${sel}`);
-        break;
-      }
-    }
-    if (!publishBtn) throw new Error('公開(追加する)ボタンが見つかりません（上の候補ログ参照）');
+    // 公開ボタンはラベルが確定できていないため、固定セレクタの総当たりではなく
+    // 「表示中のボタンを全部見て、開いているモーダル内の送信系ラベルを選ぶ」方式にする。
+    // （旧実装は has-text の部分一致 + .first() で、右サイドバーのプラン訴求ボタン
+    //   data-micromodal-trigger="modal-upgradePlanModal-coupon-for-pc" を掴んで30秒タイムアウトしていた）
+    const BTN_SEL = 'button, input[type="submit"], input[type="button"]';
+    const pick = await page.locator(BTN_SEL).evaluateAll((els) => {
+      const vis = (e) => !!(e.offsetParent || e.getClientRects().length);
+      const txt = (e) => (e.innerText || e.value || '').replace(/\s+/g, '');
+      const inModal = (e) => !!e.closest('[aria-hidden="false"], .is-open, .modal--open, [class*="is-open"]');
+      const all = els.map((e, i) => ({
+        i,
+        t: txt(e),
+        m: e.getAttribute('data-micromodal-trigger') || '',
+        modal: inModal(e),
+      })).filter((x, idx) => x.t && vis(els[idx]));
+      const strict = /^(追加|投稿|公開|登録|保存|確定|送信)(する|します)?$/;
+      const cand = all.filter((x) => !x.m && strict.test(x.t));
+      return { all, best: cand.find((x) => x.modal) || cand[0] || null };
+    });
+    console.log('🔎 表示中ボタン: ' + JSON.stringify(pick.all).slice(0, 3000));
+    if (!pick.best) throw new Error('公開ボタンが特定できません（上の表示中ボタン一覧を参照）');
+    console.log(`✅ 公開ボタン: index=${pick.best.i} text="${pick.best.t}" modal=${pick.best.modal}`);
+    const publishBtn = page.locator(BTN_SEL).nth(pick.best.i);
     await publishBtn.scrollIntoViewIfNeeded().catch(() => {});
     await publishBtn.click({ timeout: 15000 }).catch(async (e) => {
       console.log(`⚠️ 通常クリック失敗(${String(e).slice(0, 80)}) → JSクリックで再試行`);
