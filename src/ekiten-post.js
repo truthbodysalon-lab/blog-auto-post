@@ -281,18 +281,59 @@ export async function postToEkiten(article) {
     }
 
     // 確認 → 追加（公開）
-    const confirmBtn = page.locator('button:has-text("確認"), input[value="確認"]').first();
+    // 同上の理由で「確認」も完全一致＋micromodalトリガー除外にする（2026-09-23）
+    const confirmBtn = page
+      .locator('button:not([data-micromodal-trigger]):text-is("確認する"), button:not([data-micromodal-trigger]):text-is("確認"), input[type="submit"][value="確認する"], input[value="確認"]')
+      .first();
     if (await confirmBtn.count() > 0 && await confirmBtn.isVisible().catch(() => false)) {
       await confirmBtn.click();
       await page.waitForTimeout(2500);
       await shot(page, '09-confirm');
     }
     const beforeUrl = page.url();
-    const publishBtn = page.locator(
-      'button:has-text("追加する"), button:has-text("投稿"), button:has-text("公開"), input[value="追加する"]'
-    ).first();
-    if (!(await publishBtn.count())) throw new Error('公開(追加する)ボタンが見つかりません');
-    await publishBtn.click();
+    // 2026-09-23: 旧実装は has-text の部分一致 + .first() だったため、確認画面ではなく
+    // 右サイドバーの「アッププラン訴求モーダルを開くボタン」(data-micromodal-trigger付き)を
+    // 掴み、クリック可能になるのを30秒待ってタイムアウトしていた（run 35820381407）。
+    // 「投稿」「公開」は確認画面の本文（投稿者/公開ステータス）にも現れる語なので部分一致は使わない。
+    const btnDump = await page
+      .locator('button, input[type="submit"], input[type="button"], a[role="button"]')
+      .evaluateAll((els) =>
+        els
+          .map((e) => ({
+            tag: e.tagName,
+            text: (e.innerText || e.value || '').trim().slice(0, 30),
+            modal: e.getAttribute('data-micromodal-trigger') || '',
+            visible: !!(e.offsetParent || e.getClientRects().length),
+          }))
+          .filter((x) => x.text)
+      )
+      .catch(() => []);
+    console.log('🔎 確認画面のボタン候補: ' + JSON.stringify(btnDump).slice(0, 1200));
+
+    const publishSelectors = [
+      'button:not([data-micromodal-trigger]):text-is("追加する")',
+      'input[type="submit"][value="追加する"]',
+      'button:not([data-micromodal-trigger]):text-is("投稿する")',
+      'button:not([data-micromodal-trigger]):text-is("公開する")',
+      'button:not([data-micromodal-trigger]):text-is("登録する")',
+      'button:not([data-micromodal-trigger]):text-is("保存する")',
+      'input[type="submit"][value*="追加"]',
+    ];
+    let publishBtn = null;
+    for (const sel of publishSelectors) {
+      const el = page.locator(sel).first();
+      if ((await el.count()) && (await el.isVisible().catch(() => false))) {
+        publishBtn = el;
+        console.log(`✅ 公開ボタン: ${sel}`);
+        break;
+      }
+    }
+    if (!publishBtn) throw new Error('公開(追加する)ボタンが見つかりません（上の候補ログ参照）');
+    await publishBtn.scrollIntoViewIfNeeded().catch(() => {});
+    await publishBtn.click({ timeout: 15000 }).catch(async (e) => {
+      console.log(`⚠️ 通常クリック失敗(${String(e).slice(0, 80)}) → JSクリックで再試行`);
+      await publishBtn.evaluate((el) => el.click());
+    });
     await page.waitForLoadState('domcontentloaded').catch(() => {});
     await page.waitForTimeout(3000);
     await shot(page, '10-after-post');
