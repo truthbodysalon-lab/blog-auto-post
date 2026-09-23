@@ -294,6 +294,42 @@ export async function postToEkiten(article) {
     } else {
       console.log('ℹ️ 確認ボタンは見つからず（確認ステップ無しのフローとみなす）');
     }
+
+    // 「同意する」チェックボックス: 未チェックのまま送信すると必須バリデーションで弾かれ、
+    // ページ遷移もモーダルクローズも完了文言も一切起きないまま確認画面に留まる。
+    // run 35828988349の 10-after-post スクショで「同意確認は必須入力です」という赤字エラーが
+    // 実際に表示されているのを確認済み＝これが従来「結果不明(3条件すべてfalse)」になっていた真因。
+    const agreeIndex = await page.locator('input[type="checkbox"]').evaluateAll((els) => {
+      const vis = (e) => !!(e.offsetParent || e.getClientRects().length);
+      const nearbyText = (e) => {
+        const label = e.closest('label');
+        if (label) return label.innerText || '';
+        const sib = e.nextElementSibling;
+        return (sib && sib.innerText) || e.parentElement?.innerText || '';
+      };
+      return els.findIndex((e) => vis(e) && nearbyText(e).replace(/\s+/g, '').includes('同意する'));
+    });
+    if (agreeIndex >= 0) {
+      const agreeCheckbox = page.locator('input[type="checkbox"]').nth(agreeIndex);
+      const alreadyChecked = await agreeCheckbox.isChecked().catch(() => false);
+      if (!alreadyChecked) {
+        await agreeCheckbox.check({ force: true }).catch(async () => {
+          await agreeCheckbox.evaluate((el) => {
+            el.checked = true;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new Event('click', { bubbles: true }));
+          });
+        });
+        console.log('✅ 「同意する」チェックボックスにチェック');
+      } else {
+        console.log('ℹ️ 「同意する」チェックボックスは既にチェック済み');
+      }
+    } else {
+      console.log('⚠️ 「同意する」チェックボックスが見つかりません（同意ステップ無しのフローの可能性）');
+    }
+    await shot(page, '09b-agree-checked');
+
     const beforeUrl = page.url();
     // 2026-09-23: 旧実装は has-text の部分一致 + .first() だったため、確認画面ではなく
     // 右サイドバーの「アッププラン訴求モーダルを開くボタン」(data-micromodal-trigger付き)を
