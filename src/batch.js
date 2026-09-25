@@ -224,6 +224,9 @@ async function main() {
     await notifyWarn(`ブログ自動投稿 ${summary}\n失敗: ${failedTitles.join(' / ')}`);
   } else {
     await notifyError(`ブログ自動投稿 全件失敗 (${failed}件)`);
+    // 全件失敗はCIを失敗表示にする。process.exit()は通知送信など残っている
+    // 非同期処理を打ち切る恐れがあるため使わず、自然終了に任せる。
+    process.exitCode = 1;
   }
 }
 

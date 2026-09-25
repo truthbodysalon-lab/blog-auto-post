@@ -72,6 +72,7 @@ jobs:
           ADMIN_LOGIN_ID: ${{ secrets.ADMIN_LOGIN_ID }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           # 2026-09-15 Gemini無料枠の再配分: blog-auto-postは全リポ中最大日次件数のため専用モデル化（429時フォールバックは既存のまま活きる）
           GEMINI_MODEL: gemini-3.8-flash
           DEFAULT_CATEGORY: 整体
