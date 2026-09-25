@@ -19,6 +19,13 @@ export async function getBrowserContext() {
   const contextOptions = {
     viewport: { width: 1400, height: 900 },
     locale: 'ja-JP',
+    // 2026-09-24以降、サーバー側(Apache/WAF)がUAに "HeadlessChrome" を含むリクエストを
+    // 403 Forbidden で弾くようになり、管理画面 /admin/newpages/simple-add/blog/ に入れず
+    // 全投稿が失敗していた（9/24 14:30 JST以降の全run。#page_name のタイムアウトは結果であって原因ではない）。
+    // 実測: 同一URLに対し 通常UA=302 / HeadlessChrome UA=403（IPではなくUAで弾かれている）。
+    // ekiten-post.js は元から通常UAを指定していたため影響を受けていなかった。
+    userAgent:
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
   };
 
   if (fs.existsSync(AUTH_FILE)) {
