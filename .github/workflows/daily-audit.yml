@@ -1,9 +1,11 @@
 name: Daily Post Audit
 on:
   schedule:
-    - cron: '7 8 * * *'
-    - cron: '7 11 * * *'
-    - cron: '7 14 * * *'
+    - cron: '47  3 * * *'   # 12:47 JST — 日中チェック（スロット欠けを早期補完）
+    - cron: '47  6 * * *'   # 15:47 JST — 最終スロット直後チェック
+    - cron: '7   8 * * *'   # 17:07 JST — 第1夜間監査
+    - cron: '7  11 * * *'   # 20:07 JST — 第2夜間監査
+    - cron: '7  14 * * *'   # 23:07 JST — 最終監査
   workflow_dispatch:
     inputs:
       target_count:
@@ -30,5 +32,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           TARGET_COUNT: ${{ inputs.target_count || '10' }}
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python scripts/audit_posts.py
