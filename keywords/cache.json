@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-09-20T13:42:17.811Z",
-  "totalKeywords": 224,
+  "updatedAt": "2026-09-27T13:10:44.276Z",
+  "totalKeywords": 226,
   "bySymptom": {
     "肩こり": [
       {
@@ -61,7 +61,7 @@
         "score": 60
       },
       {
-        "term": "長岡市 整体 肩こり",
+        "term": "長岡市 肩こり 整体",
         "coreSymptom": "肩こり",
         "sources": [
           "autocomplete"
@@ -84,17 +84,6 @@
       },
       {
         "term": "長岡 市 肩こり マッサージ",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 肩こり 整体",
         "coreSymptom": "肩こり",
         "sources": [
           "autocomplete"
@@ -183,6 +172,17 @@
         "score": 60
       },
       {
+        "term": "長岡市 整体 肩こり",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": true,
+        "isTarget": true,
+        "score": 60
+      },
+      {
         "term": "長岡 市 肩こり 頭痛",
         "coreSymptom": "肩こり",
         "sources": [
@@ -206,16 +206,16 @@
         "score": 56
       },
       {
-        "term": "肩こり 整体 マッサージ",
+        "term": "肩こり 整体 整骨院",
         "coreSymptom": "肩こり",
         "sources": [
           "autocomplete",
           "aramaki"
         ],
-        "volume": 64,
+        "volume": 34,
         "isLocal": false,
         "isTarget": true,
-        "score": 27
+        "score": 24
       },
       {
         "term": "肩こり 整体 おすすめ",
@@ -615,7 +615,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 おすすめ",
+        "term": "ストレートネック 整体 整骨 どっち",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -637,7 +637,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 値段",
+        "term": "ストレートネック 整体 おすすめ",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -659,7 +659,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 東京",
+        "term": "ストレートネック 整体 値段",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -670,7 +670,7 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 整骨 どっち 知恵袋",
+        "term": "ストレートネック 整体 東京",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
@@ -871,6 +871,17 @@
         "score": 2
       },
       {
+        "term": "産後 骨盤矯正 ガードル",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
         "term": "産後 骨盤矯正 保険適用",
         "coreSymptom": "骨盤矯正",
         "sources": [
@@ -882,18 +893,7 @@
         "score": 2
       },
       {
-        "term": "産後 骨盤矯正 近く",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": false,
-        "isTarget": false,
-        "score": 2
-      },
-      {
-        "term": "産後 骨盤矯正 いつまで",
+        "term": "産後 骨盤矯正 ベルト",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
