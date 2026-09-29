@@ -2,6 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { isAnthropicAvailable, generateWithClaude } from './anthropic-fallback.js';
 import { getRecentTitles, isDuplicateTitle } from './topics.js';
 
 /**
@@ -240,6 +241,8 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
 
   console.log(`🤖 [${topic.slot}/10] 生成中: ${topic.symptom} × ${topic.angle} (${topic.seasonal})`);
 
+  let text;
+  try {
   let result;
   let modelIdx = 0;
   let model = makeModel(modelCandidates[modelIdx]);
@@ -270,7 +273,18 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
     }
   }
 
-  const text = result.response.text();
+  text = result.response.text();
+  } catch (geminiError) {
+    // Gemini全滅（6回試行を使い切った／モデル切替で試行を消費した場合を含む）→ Claudeを最終段として1回だけ試す。
+    // ANTHROPIC_API_KEY 未設定なら従来どおりそのまま失敗する。
+    if (!isAnthropicAvailable()) throw geminiError;
+    console.log(`⚠️ Gemini全滅: ${String(geminiError.message).split('\n')[0]}`);
+    try {
+      text = await generateWithClaude(prompt, { maxOutputTokens: 16000, label: `blog ${topic.slot}/10` });
+    } catch (claudeError) {
+      throw new Error(`Gemini全滅かつClaudeも失敗しました。Gemini: ${String(geminiError.message).split('\n')[0]} / Claude: ${String(claudeError.message).split('\n')[0]}`);
+    }
+  }
   let article;
   try {
     article = JSON.parse(text);

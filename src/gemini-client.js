@@ -10,12 +10,14 @@
  *   2. 出力枠を明示する（maxOutputTokens）
  *   3. finishReason が STOP 以外の応答は不完全とみなす
  *   4. パース・検証を通らない応答はリトライループの内側で再生成する
- *   5. 枠上限(429)は「生きている」別モデルへ切替える
+ *   5. 枠上限(429)・高負荷(503)・廃止(404)は「生きている」別モデルへ切替える
+ *   6. Geminiが全滅したら Claude を最終段として1回だけ試す（ANTHROPIC_API_KEY がある場合のみ）
  *
  * 呼び出し側は成功した結果だけを受け取る。検証条件は validate に渡すこと
  * （validate が throw すると呼び出し側にエラーを返さず再生成をやり直す）。
  */
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { isAnthropicAvailable, generateWithClaude } from './anthropic-fallback.js';
 
 // 無料枠はモデルごとに別々の1日上限。429時に別モデルへ切替えて枯渇を回避する。
 // ⚠️ 提供終了したモデルを並べると枠上限時にまとめて404で落ちて意味をなさない
@@ -65,6 +67,19 @@ async function callWithRetry(prompt, { temperature, maxOutputTokens, responseMim
     },
   });
 
+  // Gemini全滅時の最終段。ANTHROPIC_API_KEY 未設定なら従来どおり元のエラーをそのまま投げる。
+  // Claude呼び出しは1回のみ。応答は Gemini と同じ extract（パース・validate）に通す。
+  const claudeFallback = async (geminiError) => {
+    if (!isAnthropicAvailable()) throw geminiError;
+    let text;
+    try {
+      text = await generateWithClaude(prompt, { maxOutputTokens, label });
+    } catch (claudeError) {
+      throw new Error(`${tag}Gemini全滅かつClaudeも失敗しました。Gemini: ${geminiError.message.split('\n')[0]} / Claude: ${claudeError.message.split('\n')[0]}`);
+    }
+    return extract(text);
+  };
+
   let modelIdx = 0;
   let model = makeModel(candidates[modelIdx]);
 
@@ -75,17 +90,21 @@ async function callWithRetry(prompt, { temperature, maxOutputTokens, responseMim
     try {
       response = (await model.generateContent(prompt)).response;
     } catch (e) {
-      const isQuota     = e.message?.includes('429') || e.message?.toLowerCase().includes('quota');
-      const isRetryable = isQuota || e.message?.includes('503') || e.message?.includes('overloaded');
-      if (isQuota && modelIdx < candidates.length - 1) {
+      const msg         = e.message || '';
+      const lower       = msg.toLowerCase();
+      const isQuota     = msg.includes('429') || lower.includes('quota');
+      const isBusy      = msg.includes('503') || lower.includes('overloaded') || lower.includes('high demand');
+      const isGone      = msg.includes('404') || lower.includes('no longer available');
+      const isRetryable = isQuota || msg.includes('503') || msg.includes('overloaded');
+      if ((isQuota || isBusy || isGone) && modelIdx < candidates.length - 1) {
         const prev = candidates[modelIdx];
         modelIdx++;
         model = makeModel(candidates[modelIdx]);
-        console.log(`⚠️ ${tag}${prev} が枠上限(429) → ${candidates[modelIdx]} に切替えて再試行`);
+        console.log(`⚠️ ${tag}${prev} が ${isQuota ? '枠上限(429)' : isBusy ? '高負荷(503)' : '廃止(404)'} → ${candidates[modelIdx]} に切替えて再試行`);
         await new Promise(r => setTimeout(r, 2000));
         continue;
       }
-      if (!isRetryable || attempt === MAX_ATTEMPTS) throw e;
+      if (!isRetryable || attempt === MAX_ATTEMPTS) return claudeFallback(e);
       const wait = apiWaits[attempt - 1] || apiWaits[apiWaits.length - 1];
       console.log(`⏳ ${tag}API一時エラー (試行${attempt}/${MAX_ATTEMPTS})、${wait / 1000}秒後にリトライ...`);
       await new Promise(r => setTimeout(r, wait));
@@ -100,13 +119,13 @@ async function callWithRetry(prompt, { temperature, maxOutputTokens, responseMim
       }
       return extract(response.text());
     } catch (e) {
-      if (attempt === MAX_ATTEMPTS) throw e;
+      if (attempt === MAX_ATTEMPTS) return claudeFallback(e);
       console.log(`⏳ ${tag}応答が不正 (試行${attempt}/${MAX_ATTEMPTS}): ${e.message.split('\n')[0]} → 再生成します`);
       await new Promise(r => setTimeout(r, BAD_OUTPUT_WAIT));
     }
   }
 
-  throw new Error(`${tag}生成に失敗しました（${MAX_ATTEMPTS}回試行）`);
+  return claudeFallback(new Error(`${tag}生成に失敗しました（${MAX_ATTEMPTS}回試行）`));
 }
 
 /**
