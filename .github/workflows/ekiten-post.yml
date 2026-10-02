@@ -2,7 +2,7 @@ name: Ekiten Auto Post
 
 on:
   schedule:
-    - cron: '40 9 * * *'   # 18:40 JST
+    - cron: '43 9 * * *'   # 18:43 JST
   workflow_dispatch:        # 手動実行も可能
     inputs:
       discover:
@@ -13,6 +13,10 @@ on:
         description: '実際にお知らせを公開する。1で有効(対外公開)'
         required: false
         default: '0'
+
+concurrency:
+  group: ekiten-post
+  cancel-in-progress: false
 
 jobs:
   post:
