@@ -199,7 +199,7 @@ function applyNgReplacements(text) {
  * それでもNG語が残っていれば投稿させずに例外を投げる
  * （＝却下される記事をそのままエキテンへ投げない）。
  */
-function sanitizeForEkiten(text, label) {
+export function sanitizeForEkiten(text, label) {
   const { masked, placeholders } = maskStoreNames(text);
   const { result: replaced, applied } = applyNgReplacements(masked);
   const finalText = unmaskStoreNames(replaced, placeholders);

@@ -5,7 +5,7 @@
 import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
-import { generateEkitenArticle } from './ekiten-generate.js';
+import { generateEkitenArticle, sanitizeForEkiten } from './ekiten-generate.js';
 import { postToEkiten } from './ekiten-post.js';
 import { recordSubtopicCovered } from './content-clusters.js';
 
@@ -30,11 +30,22 @@ async function main() {
     }
   }
 
-  // 記事生成
+  // 記事生成（EKITEN_FIXED_* が渡された場合は生成せず、その本文を使う）
+  // 2026-10-04追加: 審査却下の差し替えなど、決めた文面をそのまま載せたい場合のため。
+  // **検問(sanitizeForEkiten)は必ず通す**。手動投稿で禁止表現のチェックを迂回できてはいけない
   let article;
   try {
-    article = await generateEkitenArticle();
-    writeLog('INFO', `記事生成完了: ${article.title}`, { kw: article.targetKw });
+    const fixedTitle = (process.env.EKITEN_FIXED_TITLE || '').trim();
+    const fixedBody = (process.env.EKITEN_FIXED_BODY || '').trim();
+    if (fixedTitle && fixedBody) {
+      const title = sanitizeForEkiten(fixedTitle, 'タイトル');
+      const bodyText = sanitizeForEkiten(fixedBody, '本文');
+      article = { title, bodyText, bodyHtml: bodyText, targetKw: '(手動指定)', subtopicId: null };
+      writeLog('INFO', `手動指定の本文を使用: ${title}`);
+    } else {
+      article = await generateEkitenArticle();
+      writeLog('INFO', `記事生成完了: ${article.title}`, { kw: article.targetKw });
+    }
   } catch (e) {
     writeLog('ERROR', `記事生成失敗: ${e.message}`);
     process.exit(1);

@@ -13,6 +13,14 @@ on:
         description: '実際にお知らせを公開する。1で有効(対外公開)'
         required: false
         default: '0'
+      title:
+        description: '手動投稿する記事タイトル(空なら自動生成)'
+        required: false
+        default: ''
+      body:
+        description: '手動投稿する本文(空なら自動生成)。検問は必ず通る'
+        required: false
+        default: ''
 
 concurrency:
   group: ekiten-post
@@ -73,6 +81,8 @@ jobs:
           GEMINI_MODEL: gemini-3.8-flash
           MODE: headless
           EKITEN_DISCOVER: ${{ github.event.inputs.discover || '0' }}
+          EKITEN_FIXED_TITLE: ${{ github.event.inputs.title }}
+          EKITEN_FIXED_BODY: ${{ github.event.inputs.body }}
           # 対外公開ガード: 手動実行のlive=1、またはリポジトリ変数 EKITEN_LIVE=1 で有効化
           EKITEN_LIVE: ${{ github.event.inputs.live || vars.EKITEN_LIVE || '0' }}
 
