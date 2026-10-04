@@ -1,0 +1,154 @@
+{
+  "date": "2026-10-04",
+  "totalPosts": 0,
+  "clusterProgress": {
+    "肩こり": {
+      "covered": 0,
+      "total": 12,
+      "pct": 0,
+      "totalPosts": 0,
+      "pillarKeyword": "長岡市 肩こり 整体",
+      "nextTarget": {
+        "id": "katakori-03",
+        "keyword": "長岡市 デスクワーク 肩こり",
+        "theme": "デスクワーカーの慢性肩こり対策"
+      }
+    },
+    "頭痛": {
+      "covered": 0,
+      "total": 12,
+      "pct": 0,
+      "totalPosts": 0,
+      "pillarKeyword": "長岡市 頭痛 整体",
+      "nextTarget": {
+        "id": "zutsu-03",
+        "keyword": "長岡市 気圧 頭痛 雨の日",
+        "theme": "気圧変化・雨の日に頭痛が起きるメカニズム"
+      }
+    },
+    "姿勢": {
+      "covered": 0,
+      "total": 18,
+      "pct": 0,
+      "totalPosts": 0,
+      "pillarKeyword": "長岡市 姿勢矯正 整体",
+      "nextTarget": {
+        "id": "shisei-11",
+        "keyword": "長岡市 猫背 肩こり 頭痛",
+        "theme": "猫背が引き起こす肩こり・頭痛の仕組み"
+      }
+    },
+    "骨盤矯正": {
+      "covered": 0,
+      "total": 10,
+      "pct": 0,
+      "totalPosts": 0,
+      "pillarKeyword": "長岡市 骨盤矯正 整体",
+      "nextTarget": {
+        "id": "kotsuban-01",
+        "keyword": "長岡市 骨盤 歪み 原因",
+        "theme": "骨盤が歪む原因とその影響"
+      }
+    }
+  },
+  "top5Gaps": [
+    {
+      "symptom": "肩こり",
+      "keyword": "長岡市 肩こり ストレッチ",
+      "theme": "30秒でできるセルフケアストレッチ3選",
+      "id": "katakori-02",
+      "priority": 100,
+      "coveragePct": 0,
+      "totalPosts": 0
+    },
+    {
+      "symptom": "頭痛",
+      "keyword": "長岡市 片頭痛 首 肩",
+      "theme": "片頭痛と首・肩こりの深い関係",
+      "id": "zutsu-02",
+      "priority": 100,
+      "coveragePct": 0,
+      "totalPosts": 0
+    },
+    {
+      "symptom": "姿勢",
+      "keyword": "長岡市 猫背 改善 整体",
+      "theme": "猫背の原因と整体での根本改善",
+      "id": "shisei-01",
+      "priority": 100,
+      "coveragePct": 0,
+      "totalPosts": 0
+    },
+    {
+      "symptom": "骨盤矯正",
+      "keyword": "長岡市 骨盤 歪み 原因",
+      "theme": "骨盤が歪む原因とその影響",
+      "id": "kotsuban-01",
+      "priority": 100,
+      "coveragePct": 0,
+      "totalPosts": 0
+    }
+  ],
+  "trendingTopics": {
+    "肩こり": [
+      "長岡市 肩こり 寒さ 対策",
+      "長岡市 肩こり スマホ首 改善",
+      "長岡市 肩こり 自律神経"
+    ],
+    "頭痛": [
+      "長岡市 片頭痛 天気痛 対策",
+      "長岡市 頭痛 めまい 吐き気",
+      "長岡市 頭痛 ストレス 解消"
+    ],
+    "姿勢": [
+      "長岡市 猫背 デスクワーク 改善",
+      "長岡市 反り腰 改善 ストレッチ",
+      "長岡市 姿勢矯正 グッズ 効果"
+    ],
+    "骨盤矯正": [
+      "長岡市 骨盤の歪み 腰痛",
+      "長岡市 産後骨盤矯正 いつから",
+      "長岡市 骨盤矯正 ダイエット 効果"
+    ]
+  },
+  "priorityThemes": [
+    {
+      "keyword": "長岡市 整体 おすすめ",
+      "reason": "最も広範な検索意図であり、新規顧客獲得に直結する。地域名＋サービス名での上位表示は必須。",
+      "priority": 1
+    },
+    {
+      "keyword": "長岡市 肩こり 専門 整体",
+      "reason": "提供されたターゲットキーワードの中で、最もニーズが大きく、慢性的な悩みを抱える層が多い。具体的な症状に特化することで専門性をアピール。",
+      "priority": 2
+    },
+    {
+      "keyword": "長岡市 猫背 改善 整体",
+      "reason": "姿勢の悩みは見た目にも関わるため、改善意欲が高い。デスクワークやスマホ利用の増加でニーズが増大している。",
+      "priority": 3
+    },
+    {
+      "keyword": "長岡市 産後骨盤矯正",
+      "reason": "産後の骨盤矯正は特定の期間に集中する強いニーズがあり、口コミにも繋がりやすい。提供されたキーワード「骨盤 歪み 原因」と関連が深い。",
+      "priority": 4
+    },
+    {
+      "keyword": "長岡市 片頭痛 首 肩 整体",
+      "reason": "片頭痛は日常生活に大きな支障をきたすため、根本改善を求める切実なニーズがある。首肩との関連を強調することで専門性を高める。",
+      "priority": 5
+    }
+  ],
+  "underusedAngles": [
+    "原因解説",
+    "セルフケア",
+    "失敗談・落とし穴",
+    "比較",
+    "Q&A形式",
+    "事例ストーリー",
+    "季節・天候の影響",
+    "ライフスタイル別",
+    "解剖学解説",
+    "来店誘導"
+  ],
+  "overusedAngles": []
+}

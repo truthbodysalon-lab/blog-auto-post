@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-09-27T14:50:48.621Z",
-  "totalKeywords": 226,
+  "updatedAt": "2026-10-04T13:19:48.059Z",
+  "totalKeywords": 224,
   "bySymptom": {
     "肩こり": [
       {
@@ -206,6 +206,18 @@
         "score": 56
       },
       {
+        "term": "肩こり 整体 マッサージ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete",
+          "aramaki"
+        ],
+        "volume": 64,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 27
+      },
+      {
         "term": "肩こり 整体 整骨院",
         "coreSymptom": "肩こり",
         "sources": [
@@ -213,18 +225,6 @@
           "aramaki"
         ],
         "volume": 34,
-        "isLocal": false,
-        "isTarget": true,
-        "score": 24
-      },
-      {
-        "term": "肩こり 整体 おすすめ",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete",
-          "aramaki"
-        ],
-        "volume": 28,
         "isLocal": false,
         "isTarget": true,
         "score": 24
@@ -637,28 +637,6 @@
         "score": 21
       },
       {
-        "term": "ストレートネック 整体 おすすめ",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": false,
-        "isTarget": true,
-        "score": 21
-      },
-      {
-        "term": "ストレートネック 整体 保険適用",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": false,
-        "isTarget": true,
-        "score": 21
-      },
-      {
         "term": "ストレートネック 整体 値段",
         "coreSymptom": "姿勢",
         "sources": [
@@ -670,7 +648,29 @@
         "score": 21
       },
       {
+        "term": "ストレートネック 整体 おすすめ",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
         "term": "ストレートネック 整体 東京",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 21
+      },
+      {
+        "term": "ストレートネック 整体 保険適用",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
