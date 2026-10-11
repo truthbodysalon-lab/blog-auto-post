@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-10-04T14:59:13.475Z",
-  "totalKeywords": 224,
+  "updatedAt": "2026-10-11T14:11:05.411Z",
+  "totalKeywords": 223,
   "bySymptom": {
     "肩こり": [
       {
@@ -238,7 +238,7 @@
           "anchor",
           "aramaki"
         ],
-        "volume": 1320,
+        "volume": 720,
         "isLocal": false,
         "isTarget": true,
         "score": 81
@@ -472,7 +472,7 @@
         "score": 63
       },
       {
-        "term": "新潟市 整体 姿勢矯正",
+        "term": "新潟 市 整体 姿勢 矯正",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
