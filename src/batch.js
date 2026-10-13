@@ -209,6 +209,12 @@ async function main() {
     }
   } catch (e) {
     await notifyError(`ブラウザ操作で致命的エラー: ${e.message}`);
+    // 未処理の記事も失敗として数える（0件=成功扱いでRecoveryが動かない事故の防止）
+    const unprocessed = articles.length - success - failed;
+    if (unprocessed > 0) {
+      failed += unprocessed;
+      failedTitles.push(`未処理${unprocessed}件`);
+    }
   } finally {
     if (process.env.MODE === 'debug') await page.waitForTimeout(10000).catch(() => {});
     await browser.close().catch(() => {});
