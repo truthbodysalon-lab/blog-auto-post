@@ -28,7 +28,9 @@ export async function postBlog(page, article) {
     await page.waitForTimeout(250);
   }
 
-  await page.evaluate(({ title, description, keywords, h1Text }) => {
+  // slug も必ず引数で渡す。渡さないとブラウザ側で window.slug（= id="slug" の入力欄そのもの）を参照し、
+  // 全記事のURLが /detail/[object HTMLInputElement]/ になる（2026-10-14発見・約2,177件が該当）
+  await page.evaluate(({ slug, title, description, keywords, h1Text }) => {
     const set = (sel, val) => {
       const el = document.querySelector(sel);
       if (el && val) {
@@ -48,7 +50,7 @@ export async function postBlog(page, article) {
       displayPublic.checked = true;
       displayPublic.dispatchEvent(new Event('change', { bubbles: true }));
     }
-  }, { title, description, keywords, h1Text });
+  }, { slug, title, description, keywords, h1Text });
 
   await setEditorHtml(page, bodyHtml);
 

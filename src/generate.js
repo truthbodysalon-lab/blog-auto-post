@@ -100,11 +100,14 @@ function toSlug(coreSymptom, angle) {
     '季節・天候の影響': 'season', 'ライフスタイル別': 'lifestyle',
     '解剖学解説': 'anatomy', '来店誘導': 'cta',
   };
+  // 同じ月に同じ症状×切り口が何度も出るため、日付＋時刻＋乱数で記事ごとに一意にする
   const d = new Date();
-  const ym = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}`;
+  const p2 = (n) => String(n).padStart(2, '0');
+  const stamp = `${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}-${p2(d.getHours())}${p2(d.getMinutes())}`;
+  const rand = Math.random().toString(36).slice(2, 5);
   const s = symptomMap[coreSymptom] || 'seitai';
   const a = angleMap[angle] || 'info';
-  return `nagaoka-${s}-${a}-${ym}`;
+  return `nagaoka-${s}-${a}-${stamp}-${rand}`;
 }
 
 // 狙うキーワードの決定。「長岡市 整体 頭痛」系は頭痛の専用ページが狙う語なので、
@@ -371,7 +374,7 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
     console.log(`⚠️ タイトル/H1が専用ページの狙い語（長岡市 頭痛 整体）と同じ: ${article.title}`);
   }
 
-  article.slug = article.slug || slug;
+  article.slug = slug;  // AIの返したslugは使わない（一意性と英数字のみを保証するため）
   article.category = topic.category;
   article.publishAt = topic.publishAt;
   console.log(`✅ [${topic.slot}/10] ${article.title}`);
