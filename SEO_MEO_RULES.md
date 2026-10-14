@@ -126,6 +126,7 @@
 - 頭痛に関する記事には、専用ページへの内部リンクを**必ず1本**入れる（AIが入れ忘れても `src/internal-links.js` が機械的に補う。投稿前ゲートでも確認）
 - 専用ページのURLは `src/seo-config.js` の `ZUTSU_PILLAR.url` 1か所（環境変数 `ZUTSU_PILLAR_URL` でも上書き可）。専用ページが新URLになったらここだけ差し替える
 - 専用ページが狙う語の判定は `isPillarKeyword()`。クラスターのサブトピック・トレンド語・キーワードキャッシュのどの経路から来ても除外される
+- **肩こりの専用ページも同じ仕組み（2026-10-14〜）**: 「長岡市 整体 肩こり」「長岡市 肩こり 整体」そのものは肩こりの専用ページ（`KATAKORI_PILLAR.url`＝/nagaoka-seitai-shoujyo/nagaoka-seitai-katakori/、環境変数 `KATAKORI_PILLAR_URL` で上書き可）だけが狙う。肩こり記事には肩こりの専用ページへの内部リンクを必ず1本入れる（`ensureKatakoriLink`・投稿前ゲート `checkKatakoriLink`）。肩こりと頭痛の両方を含む記事は両方のリンクを入れる。頭痛側の挙動は変えていない
 
 ## 🔄 トピックの割り振り（2026-10-14〜）
 

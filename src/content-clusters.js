@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { ZUTSU_PILLAR, isPillarKeyword } from './seo-config.js';
+import { ZUTSU_PILLAR, KATAKORI_PILLAR, isPillarKeyword } from './seo-config.js';
 import { boostedIds, buildRotation } from './seo-priority.js';
 
 // =====================================
@@ -10,6 +10,8 @@ import { boostedIds, buildRotation } from './seo-priority.js';
 export const CONTENT_CLUSTERS = {
   '肩こり': {
     pillarKeyword: '長岡市 肩こり 整体',
+    // 2026-10-14: この語（「長岡市 整体 肩こり」系）は肩こりの専用ページだけが狙う。
+    pillarUrl: KATAKORI_PILLAR.url,
     subtopics: [
       { id: 'katakori-01', keyword: '長岡市 肩こり 原因', theme: '背骨の歪みと筋膜が引き起こす肩こりのメカニズム' },
       { id: 'katakori-02', keyword: '長岡市 肩こり ストレッチ', theme: '30秒でできるセルフケアストレッチ3選' },

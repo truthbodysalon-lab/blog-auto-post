@@ -4,8 +4,8 @@ import path from 'path';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { isAnthropicAvailable, generateWithClaude } from './anthropic-fallback.js';
 import { getRecentTitles, isDuplicateTitle } from './topics.js';
-import { ZUTSU_PILLAR, ZUTSU_PERIPHERAL_FALLBACKS, isPillarKeyword, isHeadacheArticle } from './seo-config.js';
-import { ensurePillarLink, hasPillarLink } from './internal-links.js';
+import { ZUTSU_PILLAR, ZUTSU_PERIPHERAL_FALLBACKS, KATAKORI_PILLAR, KATAKORI_PERIPHERAL_FALLBACKS, isPillarKeyword, isHeadacheArticle, isKatakoriArticle } from './seo-config.js';
+import { ensurePillarLink, hasPillarLink, ensureKatakoriLink, hasKatakoriLink } from './internal-links.js';
 import { sanitizeArticle } from './health-claims.js';
 
 /**
@@ -121,6 +121,11 @@ function resolveTarget(topic) {
     kw = f.keyword;
     theme = f.theme;
   }
+  if (!kw && (topic.coreSymptom || '') === '肩こり') {
+    const f = KATAKORI_PERIPHERAL_FALLBACKS[(topic.slot || 1) % KATAKORI_PERIPHERAL_FALLBACKS.length];
+    kw = f.keyword;
+    theme = f.theme;
+  }
   return { kw, theme };
 }
 
@@ -154,6 +159,16 @@ export async function generateArticleForTopic(topic, retryCount = 0, guardRetry 
 
   // 頭痛の記事は、頭痛の専用ページへ内部リンクを必ず1本入れる（生成後にも機械的に補う）
   const headacheTopic = (topic.coreSymptom || '') === '頭痛' || /頭痛/.test(`${targetKw || ''}${targetTheme || ''}`);
+  // 肩こりの記事は、肩こりの専用ページへ内部リンクを必ず1本入れる（頭痛と同じ仕組み）
+  const katakoriTopic = (topic.coreSymptom || '') === '肩こり' || /肩こり/.test(`${targetKw || ''}${targetTheme || ''}`);
+  const katakoriCtx = `
+## 【肩こりの専用ページとの役割分担（重要）】
+- 「長岡市 整体 肩こり」「長岡市 肩こり 整体」そのものを狙う検索は、肩こりの専用ページが担当する。この記事は上の「狙うSEOキーワード」の周辺テーマ（原因・セルフケア・生活習慣・季節など）に集中し、専用ページと同じ語を競わない
+- タイトル・H1に「長岡市 肩こり 整体」「長岡市 整体 肩こり」の語順をそのまま使わない（狙いKWの固有の語を必ず入れる）
+${katakoriTopic || /肩こり/.test(`${topic.symptom || ''}`) ? `- ★必須★ 本文の自然な位置（原因解説の後〜まとめの前）に、肩こりの専用ページへの内部リンクを**ちょうど1本**入れる。HTMLは次のとおり:
+  <a href="${KATAKORI_PILLAR.url}">${KATAKORI_PILLAR.anchors[0]}</a>
+  例: 「肩こり全般についての詳しい情報は、<a href="${KATAKORI_PILLAR.url}">${KATAKORI_PILLAR.anchors[0]}</a>もあわせてご覧ください。」（href は上のURLを一字一句そのまま使う）` : `- この記事で肩こりに触れる場合は、本文の自然な位置に肩こりの専用ページへのリンクを1本入れる: <a href="${KATAKORI_PILLAR.url}">${KATAKORI_PILLAR.anchors[0]}</a>`}
+`;
   const pillarCtx = `
 ## 【頭痛の専用ページとの役割分担（重要）】
 - 「長岡市 整体 頭痛」「長岡市 頭痛 整体」そのものを狙う検索は、頭痛の専用ページが担当する。この記事は上の「狙うSEOキーワード」の周辺テーマ（頭痛の種類・原因・セルフケア・季節など）に集中し、専用ページと同じ語を競わない
@@ -178,7 +193,7 @@ ${clusterCtx}
 - 切り口: ${topic.angle}（${topic.angleDesc}）
 - 想定読者: ${topic.lifestyle}
 - 季節・トレンド: ${topic.seasonal}（現在 ${dateStr}）
-${pillarCtx}${guardNote}
+${pillarCtx}${katakoriCtx}${guardNote}
 ---
 
 ## 【参考: 患者の実際の悩み】
@@ -369,6 +384,16 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
     article.bodyHtml = link.bodyHtml;
     console.log(link.inserted ? '🔗 頭痛の専用ページへの内部リンクを自動挿入' : '🔗 頭痛の専用ページへの内部リンク: 本文に既にあり');
     if (!hasPillarLink(article.bodyHtml)) throw new Error('頭痛の専用ページへの内部リンクを入れられませんでした');
+  }
+  // ---- 肩こりの専用ページへの内部リンク（肩こり記事は必須。頭痛と同じ仕組み・両方の症状の記事は両方）----
+  if (katakoriTopic || isKatakoriArticle(article, topic)) {
+    const link = ensureKatakoriLink(article.bodyHtml, article.title);
+    article.bodyHtml = link.bodyHtml;
+    console.log(link.inserted ? '🔗 肩こりの専用ページへの内部リンクを自動挿入' : '🔗 肩こりの専用ページへの内部リンク: 本文に既にあり');
+    if (!hasKatakoriLink(article.bodyHtml)) throw new Error('肩こりの専用ページへの内部リンクを入れられませんでした');
+  }
+  if (/長岡市\s*(肩こり\s*整体|整体\s*肩こり)/.test(`${article.title}${article.h1Text || ''}`)) {
+    console.log(`⚠️ タイトル/H1が専用ページの狙い語（長岡市 肩こり 整体）と同じ: ${article.title}`);
   }
   if (/長岡市\s*(頭痛\s*整体|整体\s*頭痛)/.test(`${article.title}${article.h1Text || ''}`)) {
     console.log(`⚠️ タイトル/H1が専用ページの狙い語（長岡市 頭痛 整体）と同じ: ${article.title}`);

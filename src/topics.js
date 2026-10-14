@@ -326,7 +326,7 @@ export function generateDailyTopics(count = 10, opts = {}) {
     } else if (cachedVariants && cachedVariants[core]?.length > 0) {
       symptomVariant = safeVariant(cachedVariants[core][(useClock ? occ : i) % cachedVariants[core].length], variant);
     }
-    if (isPillarKeyword(symptomVariant)) symptomVariant = subtopicTheme || '頭痛の種類・セルフケア・季節';
+    if (isPillarKeyword(symptomVariant)) symptomVariant = subtopicTheme || (core === '肩こり' ? '肩こりの原因・セルフケア・生活習慣' : '頭痛の種類・セルフケア・季節');
 
     usedAngles.push(angle.name);
     usedLifestyles.push(lifestyle);

@@ -16,7 +16,7 @@
 import fs from 'fs';
 import path from 'path';
 import { google } from 'googleapis';
-import { TRACKED_KEYWORDS, ZUTSU_PILLAR } from './seo-config.js';
+import { TRACKED_KEYWORDS, ZUTSU_PILLAR, KATAKORI_PILLAR } from './seo-config.js';
 import { CONTENT_CLUSTERS } from './content-clusters.js';
 
 const HTTP_TIMEOUT_MS = 30000;
@@ -64,6 +64,7 @@ function pageKind(url) {
     const u = new URL(url);
     if (u.pathname === '/' || u.pathname === '') return 'top';
     if (u.pathname.includes(ZUTSU_PILLAR.pathMarker)) return 'pillar';
+    if (u.pathname.includes(KATAKORI_PILLAR.pathMarker)) return 'pillar-katakori';
     return 'other';
   } catch {
     return 'other';
@@ -115,7 +116,9 @@ export function summarize(rows, windows) {
         share: w28.impressions > 0 ? Math.round((p.impressions / w28.impressions) * 100) : 0,
       }));
     // 専用ページが狙う語で、専用ページ以外が最も表示されている = 食い合いの疑い
-    const cannibal = t.pillar && pageList.length > 0 && pageList[0].kind !== 'pillar';
+    // 期待するページ: 頭痛の語=頭痛の専用ページ（'pillar'）、肩こりの語=肩こりの専用ページ（'pillar-katakori'）
+    const expectedKind = t.pillarKind === 'katakori' ? 'pillar-katakori' : 'pillar';
+    const cannibal = t.pillar && pageList.length > 0 && pageList[0].kind !== expectedKind;
     return {
       id: t.id,
       label: t.label,
