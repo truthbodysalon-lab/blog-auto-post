@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { ZUTSU_PILLAR, isPillarKeyword } from './seo-config.js';
+import { boostedIds, buildRotation } from './seo-priority.js';
 
 // =====================================
 // コンテンツクラスター定義
@@ -144,8 +145,10 @@ export function getNextSubtopic(coreSymptom) {
 export function pickSubtopicByRotation(coreSymptom, n) {
   const cluster = CONTENT_CLUSTERS[coreSymptom];
   if (!cluster) return null;
-  const list = cluster.subtopics.filter(s => !isPillarKeyword(s.keyword));
-  if (list.length === 0) return null;
+  const base = cluster.subtopics.filter(s => !isPillarKeyword(s.keyword));
+  if (base.length === 0) return null;
+  // 週次の順位計測で「あと一押し（8〜20位）」と出た語は、1周に2回登場させる
+  const list = buildRotation(base, boostedIds(coreSymptom));
   return list[((n % list.length) + list.length) % list.length];
 }
 

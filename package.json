@@ -13,6 +13,8 @@
     "topics": "node -e \"import('./src/topics.js').then(m=>console.log(JSON.stringify(m.generateDailyTopics(10),null,2)))\"",
     "keywords": "node src/keyword-research.js",
     "health": "node src/health-check.js",
+    "gsc:weekly": "node src/gsc-weekly.js",
+    "gsc:test": "node scripts/gsc-weekly-test.mjs",
     "logs": "node -e \"const fs=require('fs'),d=new Date().toISOString().slice(0,10),p=require('path').resolve('logs',d+'.jsonl');if(fs.existsSync(p)){fs.readFileSync(p,'utf8').split('\\n').filter(Boolean).forEach(l=>{try{const o=JSON.parse(l);console.log(o.time.slice(11,19),'['+o.level+']',o.message)}catch{}});}else console.log('今日のログなし')\""
   },
   "keywords": [],

@@ -104,3 +104,20 @@ export function isHeadacheArticle(article, topic = {}) {
     .replace(/<[^>]+>/g, '');
   return (bodyText.match(/頭痛/g) || []).length >= 5;
 }
+
+// =====================================
+// 週次の順位計測（Search Console）で追う語
+// 2026-10-14: 計測の仕組み（Truth経営/SEO/SEO継続の仕組み.md）
+//  - 語順は問わない（「長岡市 整体 頭痛」と「長岡市 頭痛 整体」は同じ語として合算する）
+//  - pillar: true は頭痛の専用ページが狙う語。ここにブログ記事が表示されたら食い合いの疑い
+// =====================================
+export const TRACKED_KEYWORDS = [
+  { id: 't1', label: '長岡市 整体 頭痛', tokens: ['長岡市', '整体', '頭痛'], pillar: true },
+  { id: 't2', label: '長岡 頭痛 整体', tokens: ['長岡', '頭痛', '整体'], pillar: true },
+  { id: 't3', label: '長岡市 頭痛', tokens: ['長岡市', '頭痛'], pillar: true },
+  { id: 't4', label: '長岡 頭痛', tokens: ['長岡', '頭痛'], pillar: true },
+  { id: 't5', label: '長岡市 肩こり 整体', tokens: ['長岡市', '肩こり', '整体'], pillar: false },
+  { id: 't6', label: '長岡 肩こり 整体', tokens: ['長岡', '肩こり', '整体'], pillar: false },
+  { id: 't7', label: '長岡市 整体', tokens: ['長岡市', '整体'], pillar: false },
+  { id: 't8', label: '長岡 整体', tokens: ['長岡', '整体'], pillar: false },
+];

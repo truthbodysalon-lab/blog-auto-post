@@ -76,12 +76,22 @@ jobs:
       # seo-audit.jsが同じcontent-strategy.jsonを直後に上書きしており、topics.jsが読む
       # updatedAt/underusedAngles/overusedPatterns/trendingTopicsは全てseo-audit.js側でカバー済み（重複呼び出しのみ削減）
 
+      # Step 3: 週次の順位計測（Search Console API・LLM不使用）
+      # → rankings/gsc-weekly*.{json,md} + keywords/seo-priority.json（topics.jsが読んで記事テーマの巡回に反映）
+      # 権限・鍵が無い間は「未認可」と記録してDiscordに手順を通知して正常終了する
+      - name: Weekly GSC ranking (Search Console)
+        run: node src/gsc-weekly.js
+        env:
+          GSC_SA_KEY: ${{ secrets.GSC_SA_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        continue-on-error: true
+
       # 更新されたファイルをcommit
       - name: Commit updated strategy & cache
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add keywords/cache.json content-strategy.json rankings/ 2>/dev/null || true
+          git add keywords/cache.json keywords/seo-priority.json content-strategy.json rankings/ 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "ℹ️ コミット対象の変更なし"
             exit 0
