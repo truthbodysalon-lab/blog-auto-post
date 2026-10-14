@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { ZUTSU_PILLAR, isPillarKeyword } from './seo-config.js';
 
 // =====================================
 // コンテンツクラスター定義
@@ -25,12 +26,15 @@ export const CONTENT_CLUSTERS = {
   },
   '頭痛': {
     pillarKeyword: '長岡市 頭痛 整体',
+    // 2026-10-14: この語（「長岡市 整体 頭痛」系）は頭痛の専用ページだけが狙う。
+    // ブログのサブトピックは下記の周辺語を担当し、専用ページへ内部リンクで評価を集める。
+    pillarUrl: ZUTSU_PILLAR.url,
     subtopics: [
       { id: 'zutsu-01', keyword: '長岡市 緊張型頭痛 整体', theme: '緊張型頭痛の原因と整体での改善' },
       { id: 'zutsu-02', keyword: '長岡市 片頭痛 首 肩', theme: '片頭痛と首・肩こりの深い関係' },
       { id: 'zutsu-03', keyword: '長岡市 気圧 頭痛 雨の日', theme: '気圧変化・雨の日に頭痛が起きるメカニズム' },
       { id: 'zutsu-04', keyword: '長岡市 後頭部 頭痛 原因', theme: '後頭部が痛い頭痛の原因と対処法' },
-      { id: 'zutsu-05', keyword: '長岡市 頭痛薬 効かない', theme: '頭痛薬に頼らない根本改善' },
+      { id: 'zutsu-05', keyword: '長岡市 頭痛薬 効かない', theme: '頭痛薬に頼りすぎないための過ごし方・考え方' },
       { id: 'zutsu-06', keyword: '長岡市 肩こり 頭痛 同時', theme: '肩こりと頭痛が同時に出る原因' },
       { id: 'zutsu-07', keyword: '長岡市 首 歪み 頭痛', theme: '首の歪み・ストレートネックと頭痛' },
       { id: 'zutsu-08', keyword: '長岡市 デスクワーク 頭痛 毎日', theme: '毎日頭痛が出るデスクワーカーへ' },
@@ -38,13 +42,17 @@ export const CONTENT_CLUSTERS = {
       { id: 'zutsu-10', keyword: '長岡市 頭痛 自律神経 整体', theme: '自律神経と慢性頭痛の関係' },
       { id: 'zutsu-11', keyword: '長岡市 梅雨 頭痛 対策', theme: '梅雨・低気圧シーズンの頭痛対策' },
       { id: 'zutsu-12', keyword: '長岡市 頭痛 睡眠不足 関係', theme: '睡眠不足・寝すぎと頭痛の関係' },
+      // 2026-10-14 追加: 頭痛の種類・セルフケア・季節（専用ページの周辺語）
+      { id: 'zutsu-13', keyword: '長岡市 頭痛 種類 違い', theme: '頭痛の種類（緊張型・片頭痛など）と一般的な特徴' },
+      { id: 'zutsu-14', keyword: '長岡市 頭痛 セルフケア 自宅', theme: '自宅でできる頭痛との付き合い方・セルフケア' },
+      { id: 'zutsu-15', keyword: '長岡市 寒暖差 頭痛 秋 冬', theme: '寒暖差が大きい季節の頭痛と過ごし方' },
     ],
   },
   '姿勢': {
     pillarKeyword: '長岡市 姿勢矯正 整体',
     subtopics: [
       // --- 猫背 ---
-      { id: 'shisei-01', keyword: '長岡市 猫背 改善 整体', theme: '猫背の原因と整体での根本改善' },
+      { id: 'shisei-01', keyword: '長岡市 猫背 改善 整体', theme: '猫背の原因と整体でのケアの考え方' },
       { id: 'shisei-11', keyword: '長岡市 猫背 肩こり 頭痛', theme: '猫背が引き起こす肩こり・頭痛の仕組み' },
       { id: 'shisei-12', keyword: '長岡市 猫背 大人 治し方', theme: '大人の猫背を整体で改善する方法' },
       { id: 'shisei-13', keyword: '長岡市 スマホ 猫背 悪化', theme: 'スマホ・PCで猫背が進行するメカニズム' },
@@ -116,7 +124,8 @@ export function getNextSubtopic(coreSymptom) {
   if (!cluster) return null;
 
   const coverage = loadClusterCoverage()[coreSymptom] || {};
-  const subtopics = cluster.subtopics;
+  // 専用ページが狙う語そのものは、ブログのサブトピックに使わない
+  const subtopics = cluster.subtopics.filter(s => !isPillarKeyword(s.keyword));
 
   // 未カバーのものを優先
   const uncovered = subtopics.filter(s => !coverage[s.id]);
@@ -127,6 +136,17 @@ export function getNextSubtopic(coreSymptom) {
   // 全カバー済みなら一番少ないものを選ぶ
   const sorted = [...subtopics].sort((a, b) => (coverage[a.id] || 0) - (coverage[b.id] || 0));
   return sorted[0];
+}
+
+// 状態を持たない巡回選択（GitHub Actionsは毎回まっさらな環境で実行されるため、
+// カバレッジファイルが残らない。n番目の登場として、サブトピックを順番に巡回する）。
+// 専用ページが狙う語（isPillarKeyword）は除外する。
+export function pickSubtopicByRotation(coreSymptom, n) {
+  const cluster = CONTENT_CLUSTERS[coreSymptom];
+  if (!cluster) return null;
+  const list = cluster.subtopics.filter(s => !isPillarKeyword(s.keyword));
+  if (list.length === 0) return null;
+  return list[((n % list.length) + list.length) % list.length];
 }
 
 // クラスターの進捗サマリーを生成

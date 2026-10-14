@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { getNextSubtopic, recordSubtopicCovered, getClusterProgress } from './content-clusters.js';
+import { getNextSubtopic, recordSubtopicCovered, getClusterProgress, pickSubtopicByRotation } from './content-clusters.js';
+import { isPillarKeyword } from './seo-config.js';
 
 const HISTORY_FILE = path.resolve('posts/history.json');
 const KEYWORD_CACHE_FILE = path.resolve('keywords/cache.json');
@@ -216,11 +217,52 @@ function pickAngleWithStrategy(angles, usedAngles, strategy) {
   return pickFromArray(angles, usedAngles);
 }
 
-export function generateDailyTopics(count = 10) {
+// =====================================
+// 時刻ベースの巡回（状態を持たない割り振り）
+// 2026-10-14: GitHub Actionsは毎回まっさらな環境で POST_COUNT=1 実行するため、
+//  従来は毎回「肩こり」×先頭3サブトピックに固定され、同じ語を狙う記事が大量にできていた
+//  （自社記事同士の食い合い）。日付と時刻から「今日の何番目の記事か」を決め、
+//  症状（肩こり3・頭痛3・姿勢2・骨盤矯正2）とサブトピックを順番に巡回する。
+// =====================================
+const DAY_PLAN = ['肩こり', '頭痛', '姿勢', '骨盤矯正', '肩こり', '頭痛', '姿勢', '骨盤矯正', '肩こり', '頭痛'];
+const JST_MS = 9 * 60 * 60 * 1000;
+// GitHubのcronは数十分遅れることがあるため、投稿枠(:47)から30分戻した時刻で枠を決める
+const SLOT_GRACE_MS = 30 * 60 * 1000;
+
+export function getClockSlot(now = new Date()) {
+  const j = new Date(now.getTime() + JST_MS - SLOT_GRACE_MS);
+  const dayIndex = Math.floor(j.getTime() / 86400000);
+  const hour = j.getUTCHours();
+  // 投稿枠は JST 7:47〜16:47 の10枠。範囲外（リカバリー・手動実行）は10枠に折り返す
+  const slotIdx = (((hour - 7) % 10) + 10) % 10;
+  return { dayIndex, slotIdx };
+}
+
+// そのコア症状が「今日の枠までに」何回登場済みか＋日数分の累計 = 巡回の通し番号
+function occurrenceNumber(core, dayIndex, slotIdx) {
+  const perDay = DAY_PLAN.filter(c => c === core).length;
+  const before = DAY_PLAN.slice(0, slotIdx).filter(c => c === core).length;
+  return dayIndex * perDay + before;
+}
+
+// 専用ページが狙う語（長岡市 頭痛 整体 など）は候補から外す
+function safeVariant(candidate, fallback) {
+  return candidate && !isPillarKeyword(candidate) ? candidate : fallback;
+}
+
+export function generateDailyTopics(count = 10, opts = {}) {
   const usedAngles = [];
   const usedLifestyles = [];
   const seasonal = getMonthSeasonal();
-  const symptomQueue = buildSymptomQueue(count);
+  // 1回の実行が10件未満（CIの1本ずつ投稿）は時刻ベースで巡回。10件一括(ローカル)は従来どおり
+  const useClock = opts.clock ?? (count < 10);
+  const clock = getClockSlot(opts.now || new Date());
+  const symptomQueue = useClock
+    ? Array.from({ length: count }, (_, i) => {
+        const core = DAY_PLAN[(clock.slotIdx + i) % DAY_PLAN.length];
+        return { core, variant: SYMPTOM_VARIANTS[core][0] };
+      })
+    : buildSymptomQueue(count);
 
   // コンテンツ戦略（週次で更新）
   const strategy = loadContentStrategy();
@@ -251,15 +293,21 @@ export function generateDailyTopics(count = 10) {
   const topics = [];
   for (let i = 0; i < count; i++) {
     const { core, variant } = symptomQueue[i];
-    const angle = pickAngleWithStrategy(ANGLES, usedAngles, strategy);
-    const lifestyle = pickFromArray(LIFESTYLES, usedLifestyles);
+    const slotIdx = (clock.slotIdx + i) % DAY_PLAN.length;
+    const occ = occurrenceNumber(core, clock.dayIndex, slotIdx);
+    const angle = useClock
+      ? ANGLES[(occ * 3 + slotIdx) % ANGLES.length]
+      : pickAngleWithStrategy(ANGLES, usedAngles, strategy);
+    const lifestyle = useClock
+      ? LIFESTYLES[(clock.dayIndex + slotIdx) % LIFESTYLES.length]
+      : pickFromArray(LIFESTYLES, usedLifestyles);
 
     // クラスターから未カバーのサブトピックを取得（SEO1位狙いキーワード）
     let subtopicKeyword = null;
     let subtopicTheme = null;
     let subtopicId = null;
     try {
-      const nextSub = getNextSubtopic(core);
+      const nextSub = useClock ? pickSubtopicByRotation(core, occ) : getNextSubtopic(core);
       if (nextSub) {
         subtopicKeyword = nextSub.keyword;
         subtopicTheme = nextSub.theme;
@@ -268,26 +316,28 @@ export function generateDailyTopics(count = 10) {
     } catch {}
 
     // 優先順位: 戦略トレンド > クラスターサブトピック > キーワードキャッシュ > 静的バリアント
+    // ※「長岡市 頭痛 整体」など専用ページが狙う語は、どの経路から来ても使わない（safeVariant）
     let symptomVariant = variant;
     if (strategy?.trendingTopics?.[core]?.length > 0) {
       const trendVars = strategy.trendingTopics[core];
-      symptomVariant = trendVars[i % trendVars.length];
+      symptomVariant = safeVariant(trendVars[(useClock ? occ : i) % trendVars.length], subtopicTheme || variant);
     } else if (subtopicTheme) {
       symptomVariant = subtopicTheme;
     } else if (cachedVariants && cachedVariants[core]?.length > 0) {
-      symptomVariant = cachedVariants[core][i % cachedVariants[core].length];
+      symptomVariant = safeVariant(cachedVariants[core][(useClock ? occ : i) % cachedVariants[core].length], variant);
     }
+    if (isPillarKeyword(symptomVariant)) symptomVariant = subtopicTheme || '頭痛の種類・セルフケア・季節';
 
     usedAngles.push(angle.name);
     usedLifestyles.push(lifestyle);
     if (usedAngles.length >= ANGLES.length) usedAngles.length = 0;
     if (usedLifestyles.length >= LIFESTYLES.length) usedLifestyles.length = 0;
 
-    const publishHour = [7, 8, 10, 11, 13, 14, 16, 17, 19, 20][i];
+    const publishHour = [7, 8, 10, 11, 13, 14, 16, 17, 19, 20][useClock ? slotIdx : i];
     const publishMinute = Math.floor(Math.random() * 60);
 
     topics.push({
-      slot: i + 1,
+      slot: useClock ? slotIdx + 1 : i + 1,
       category: '整体',
       symptom: symptomVariant,
       coreSymptom: core,

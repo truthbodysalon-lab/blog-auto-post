@@ -38,9 +38,9 @@
   "overusedPatterns": [],
   "symptomCounts": {},
   "titleTemplates": [
-    "【長岡市】{symptom}が改善しない3つの原因と整体院の解決策",
-    "{symptom}に悩む長岡市の方へ｜薬に頼らない根本改善とは",
-    "長岡市の整体院が解説｜{symptom}の正しい改善法"
+    "【長岡市】{symptom}が続く3つの背景と整体院の考え方",
+    "{symptom}に悩む長岡市の方へ｜薬だけに頼らない過ごし方とは",
+    "長岡市の整体院が解説｜{symptom}との上手な付き合い方"
   ],
   "peopleAlsoAsk": {
     "肩こり": [
@@ -104,7 +104,7 @@
     },
     {
       "keyword": "長岡市 猫背 改善 整体",
-      "theme": "猫背の原因と整体での根本改善",
+      "theme": "猫背の原因と整体でのケアの考え方",
       "symptom": "姿勢",
       "id": "shisei-01",
       "coveragePct": 0

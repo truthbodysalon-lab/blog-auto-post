@@ -6,6 +6,7 @@ import { postBlog } from './post.js';
 import { generateArticleForTopic } from './generate.js';
 import { generateDailyTopics, appendHistory, recordTopicPosted } from './topics.js';
 import { notify, notifySuccess, notifyError, notifyWarn, writeLog } from './notify.js';
+import { publishGateProblems } from './publish-gate.js';
 
 const MAX_POST_RETRIES = 3;
 const MAX_GEN_RETRIES = 2;
@@ -186,6 +187,14 @@ async function main() {
 
     for (const article of articles) {
       try {
+        // 投稿前の最終ゲート: 断定・保証表現／頭痛記事の専用ページ内部リンク
+        const gateProblems = publishGateProblems(article);
+        if (gateProblems.length) {
+          failed++;
+          failedTitles.push(article.title);
+          writeLog('ERROR', `投稿前チェックNGのため投稿しません: ${article.title}`, { problems: gateProblems });
+          continue;
+        }
         const result = await postWithRetry(page, article);
         if (result?.urlChanged && !result?.retryFailed) {
           success++;

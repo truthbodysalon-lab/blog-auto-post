@@ -4,6 +4,9 @@ import path from 'path';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { isAnthropicAvailable, generateWithClaude } from './anthropic-fallback.js';
 import { getRecentTitles, isDuplicateTitle } from './topics.js';
+import { ZUTSU_PILLAR, ZUTSU_PERIPHERAL_FALLBACKS, isPillarKeyword, isHeadacheArticle } from './seo-config.js';
+import { ensurePillarLink, hasPillarLink } from './internal-links.js';
+import { sanitizeArticle } from './health-claims.js';
 
 /**
  * JSON文字列リテラル内に混入した生の制御文字（改行・タブ等）だけをエスケープする。
@@ -49,13 +52,13 @@ const SALON_PROFILE = `
 - 店名: 整体院トゥルース（ボディコーディネートサロン Truth）
 - 院長: まぁ
 - 所在地: 新潟県長岡市（雪国・豪雪地帯の地域特性）
-- 専門: 肩こり・頭痛・姿勢・骨盤矯正の根本改善整体
-- 強み: 背骨のゆがみ改善専門、骨格調整・筋膜リリース
+- 専門: 肩こり・頭痛・姿勢・骨盤矯正の整体
+- 強み: 背骨・骨格のバランスや姿勢に目を向けた施術、骨格調整・筋膜リリース
 - ターゲット: 慢性的な肩こり・頭痛に悩む30〜50代女性
 - 実績: Google口コミ130件以上、医療関係者・プロスポーツ選手対応
 - 初回オファー: 通常12,000円 → 4,680円（税込・施術40分・1日3名限定）
-- 哲学: どこに行っても改善しない不調の根本原因を特定し解決する
-- 競合との差別化: マッサージ・湿布・薬では取れない「背骨の歪み」にアプローチ
+- 哲学: お体の状態を丁寧に確認し、姿勢や体の使い方の面から整えていく（診断や治療は行わない）
+- 競合との差別化: マッサージ・湿布・薬とは違う、背骨・骨格・姿勢の面からのアプローチ
 `;
 
 const SAMPLE_TAGS = [
@@ -104,7 +107,21 @@ function toSlug(coreSymptom, angle) {
   return `nagaoka-${s}-${a}-${ym}`;
 }
 
-export async function generateArticleForTopic(topic, retryCount = 0) {
+// 狙うキーワードの決定。「長岡市 整体 頭痛」系は頭痛の専用ページが狙う語なので、
+// ブログ記事では周辺語（頭痛の種類・原因・セルフケア・季節）に置き換える。
+function resolveTarget(topic) {
+  let kw = topic.subtopicKeyword || null;
+  let theme = topic.subtopicTheme || null;
+  if (kw && isPillarKeyword(kw)) { kw = null; theme = null; }
+  if (!kw && (topic.coreSymptom || '') === '頭痛') {
+    const f = ZUTSU_PERIPHERAL_FALLBACKS[(topic.slot || 1) % ZUTSU_PERIPHERAL_FALLBACKS.length];
+    kw = f.keyword;
+    theme = f.theme;
+  }
+  return { kw, theme };
+}
+
+export async function generateArticleForTopic(topic, retryCount = 0, guardRetry = 0, guardNote = '') {
   const refs = loadReferenceMaterials();
   const recentTitles = getRecentTitles(20);
   const slug = toSlug(topic.coreSymptom || topic.symptom, topic.angle);
@@ -127,14 +144,26 @@ export async function generateArticleForTopic(topic, retryCount = 0) {
   });
 
   // クラスター情報をプロンプトに注入
-  const clusterCtx = topic.subtopicKeyword
-    ? `- 狙うSEOキーワード（クラスター）: 【${topic.subtopicKeyword}】\n- このキーワードで検索1位を目指す。タイトル・H1・本文冒頭100字に必ず含める`
+  const { kw: targetKw, theme: targetTheme } = resolveTarget(topic);
+  const clusterCtx = targetKw
+    ? `- 狙うSEOキーワード（クラスター）: 【${targetKw}】\n- このキーワードで検索1位を目指す。タイトル・H1・本文冒頭100字に必ず含める`
     : `- 主軸SEOキーワード: 「${topic.coreSymptom || topic.symptom}　長岡市」`;
+
+  // 頭痛の記事は、頭痛の専用ページへ内部リンクを必ず1本入れる（生成後にも機械的に補う）
+  const headacheTopic = (topic.coreSymptom || '') === '頭痛' || /頭痛/.test(`${targetKw || ''}${targetTheme || ''}`);
+  const pillarCtx = `
+## 【頭痛の専用ページとの役割分担（重要）】
+- 「長岡市 整体 頭痛」「長岡市 頭痛 整体」そのものを狙う検索は、頭痛の専用ページが担当する。この記事は上の「狙うSEOキーワード」の周辺テーマ（頭痛の種類・原因・セルフケア・季節など）に集中し、専用ページと同じ語を競わない
+- タイトル・H1に「長岡市 頭痛 整体」「長岡市 整体 頭痛」の語順をそのまま使わない（狙いKWの固有の語を必ず入れる）
+${headacheTopic || /頭痛/.test(`${topic.symptom || ''}`) ? `- ★必須★ 本文の自然な位置（原因解説の後〜まとめの前）に、頭痛の専用ページへの内部リンクを**ちょうど1本**入れる。HTMLは次のとおり:
+  <a href="${ZUTSU_PILLAR.url}">${ZUTSU_PILLAR.anchors[0]}</a>
+  例: 「頭痛全般についての詳しい情報は、<a href="${ZUTSU_PILLAR.url}">${ZUTSU_PILLAR.anchors[0]}</a>もあわせてご覧ください。」（href は上のURLを一字一句そのまま使う）` : `- この記事で頭痛に触れる場合は、本文の自然な位置に頭痛の専用ページへのリンクを1本入れる: <a href="${ZUTSU_PILLAR.url}">${ZUTSU_PILLAR.anchors[0]}</a>`}
+`;
 
   const prompt = `
 あなたはプロのWebライター兼SEO専門家です。
 整体院トゥルース（新潟県長岡市）のブログ記事を、以下の【SEO特化7ステップ方式】で作成してください。
-目標: Googleで「${topic.subtopicKeyword || (topic.coreSymptom + ' 長岡市')}」検索 **1位獲得**。
+目標: Googleで「${targetKw || (topic.coreSymptom + ' 長岡市')}」検索 **1位獲得**。
 
 ${SALON_PROFILE}
 
@@ -142,11 +171,11 @@ ${SALON_PROFILE}
 
 ## 【今日の記事指定】
 ${clusterCtx}
-- 具体テーマ: ${topic.subtopicTheme || topic.symptom}
+- 具体テーマ: ${targetTheme || topic.symptom}
 - 切り口: ${topic.angle}（${topic.angleDesc}）
 - 想定読者: ${topic.lifestyle}
 - 季節・トレンド: ${topic.seasonal}（現在 ${dateStr}）
-
+${pillarCtx}${guardNote}
 ---
 
 ## 【参考: 患者の実際の悩み】
@@ -163,8 +192,8 @@ ${refs.lpStructure}
 ## 【SEO特化 7ステップ記事制作ルール】
 
 ### ステップ1: タイトル戦略（検索1位を狙うタイトル）
-- 狙いキーワード「${topic.subtopicKeyword || topic.symptom}」を**タイトル先頭または前半**に配置
-- タイトルは32字以内。数字・疑問形・ベネフィット（〜が改善/〜の原因）を含める
+- 狙いキーワード「${targetKw || topic.symptom}」を**タイトル先頭または前半**に配置
+- タイトルは32字以内。数字・疑問形・読者の関心（〜との付き合い方/〜が起こる背景）を含める。「治る」「改善率」「必ず」などの断定・保証は使わない
 - 例: 「長岡市の肩こりの原因｜整体院トゥルースが解説」「長岡市で気圧頭痛に悩む方へ」
 - 内部で5候補を考えてクリック率・SEO最強の1本を選ぶ
 
@@ -173,7 +202,7 @@ ${refs.lpStructure}
 - **ブロック1**: 冒頭フック（100字以内・狙いキーワードを最初の1文に含める）
 - **ブロック2**: 原因解説（背骨の歪み・自律神経・季節の影響など。<h2>で見出し）
 - **ブロック3**: やってはいけないNG行動 or セルフケア方法（番号付きリスト必須）
-- **ブロック4**: 整体院トゥルースの根本改善アプローチ（院の強みを自然に紹介）
+- **ブロック4**: 整体院トゥルースの考え方と施術の進め方（院の強みを自然に紹介。効果は約束せず、お体の状態を確認して進めることを伝える）
 - **ブロック5**: まとめ + 来院CTA + NAP情報
 - **ブロック6**: よくある質問（FAQ）4問 ← ★必須★ People Also Ask対策
 
@@ -195,21 +224,23 @@ ${refs.lpStructure}
 - 各Q&Aを <details><summary>Q. 〜〜？</summary><p>A. 〜〜</p></details> 形式で4問書く
 - 質問は「${topic.coreSymptom || topic.symptom} [悩み]」「長岡市 整体 [疑問]」形式
 - 回答は50〜100字で簡潔に。最後に「詳しくは当院にご相談ください」を添える
-- 例: Q.「肩こりは整体で何回で改善しますか？」A.「個人差はありますが、初回〜3回でほぐれを実感する方が多いです。当院では1日3名限定で丁寧に対応しています。」
+- 例: Q.「肩こりは整体で何回通えばいいですか？」A.「状態や生活習慣によって個人差が大きく、回数をお約束することはできません。初回にお体の状態を確認してからご提案します。」
 
 ### ステップ7: まとめ文
 - 全ブロックの要点を2〜3個の短い<p>に分けてまとめる（1つの長い段落にしない）
-- 「繰り返す不調から卒業する」「根本改善」のメッセージで締める
+- 「繰り返しにくい体づくりを一緒に考えていく」というメッセージで締める（効果の約束・断定はしない）
+- NAPの直前に、次の注意書きを<p>で1文入れる: 「※当院は整体院であり、病気の診断や治療は行いません。強い痛みや急な症状がある場合は、先に医療機関の受診をおすすめします。」
 - 末尾に院名・住所・電話番号（NAP）を明記する
 
 ---
 
 ## 【SEO/MEOルール（絶対遵守）】
-1. **禁止語**: 「治る」「治療」「絶対」「100%」「最高」「No.1」「医学的に証明」
+1. **禁止語**: 「治る」「治す」「完治」「治療」(当院の施術について)「絶対」「必ず(効果の保証として)」「100%」「改善率」「確実」「保証」「最高」「No.1」「医学的に証明」「診断します」「原因を特定」「根本原因」「根本改善」
+1a. **健康表現は断定・保証しない**: 効果は「〜と言われています」「〜の場合があります」「〜を目指します」で書く。「あなたの頭痛は〜が原因です」のように診断ととれる書き方はしない。実績の数値（改善率○%など）は書かない。タイトルでも「整体で楽に！」「〜を解消！」のような効果の言い切りは避ける。競合ページが使っていても真似しない
 1b. **ハッシュタグ禁止**: 本文中に「#○○」「#長岡市」等の#記号ハッシュタグを一切使用しない。SEO・MEO効果はなく投稿品質を下げるため絶対禁止
-2. **推奨語**: 「改善」「整える」「サポート」「根本から」「繰り返さない体に」
+2. **推奨語**: 「整える」「サポート」「ケア」「目指す」「体の使い方を見直す」「繰り返しにくい体づくり」
 3. **NAP情報（末尾CTAに必須）**:
-   「■ 整体院トゥルース（ボディコーディネートサロン Truth）／■ 所在地: 新潟県長岡市／■ 専門: 肩こり・頭痛・姿勢・骨盤矯正の根本改善整体／■ 初回限定: 通常12,000円→4,680円（税込・施術40分・1日3名限定）」
+   「■ 整体院トゥルース（ボディコーディネートサロン Truth）／■ 所在地: 新潟県長岡市／■ 専門: 肩こり・頭痛・姿勢・骨盤矯正の整体／■ 初回限定: 通常12,000円→4,680円（税込・施術40分・1日3名限定）」
 4. **過去投稿との類似タイトル禁止（以下と80%以上類似しないこと）**:
 ${recentTitles.length ? recentTitles.map(t => `   - ${t}`).join('\n') : '   (履歴なし)'}
 5. **本文文字数**: 2000〜2800字（FAQ込み。SEOは長文有利）
@@ -307,6 +338,37 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
     console.log(`⚠️ タイトル類似検出 → 再生成 (${retryCount + 1})`);
     await new Promise(r => setTimeout(r, 1500));
     return generateArticleForTopic(topic, retryCount + 1);
+  }
+
+  // ---- 健康表現ガード（断定・保証・診断の防止）----
+  // 言い換えで済む語は自動で言い換え、残る語があれば再生成（最大2回）→ それでも残れば投稿させず失敗にする
+  const guard = sanitizeArticle(article);
+  if (guard.applied.length) console.log(`🛡️ 健康表現ガード: 自動言い換え (${guard.applied.join(', ')})`);
+  if (guard.blockers.length) {
+    const lines = guard.blockers.map(b => `${b.field}: ${b.reason}「${b.snippet}」`);
+    if (guardRetry < 2) {
+      console.log(`⚠️ 健康表現ガードNG → 再生成 (${guardRetry + 1}/2): ${lines.join(' / ')}`);
+      await new Promise(r => setTimeout(r, 1500));
+      const note = `\n## 【前回の生成で見つかった問題（必ず直すこと）】\n${lines.map(l => `- ${l}`).join('\n')}\n- 断定・保証・診断ととれる表現を使わず、「〜と言われています」「〜の場合があります」「〜を目指します」に言い換える\n`;
+      return generateArticleForTopic(topic, retryCount, guardRetry + 1, note);
+    }
+    throw new Error(`健康表現ガードNG（再生成上限）: ${lines.join(' / ')}`);
+  }
+
+  // 専用ページが狙う語（長岡市 頭痛 整体 など）はメタキーワードからも外す
+  if (typeof article.keywords === 'string') {
+    article.keywords = article.keywords.split(/[,、，]/).map(k => k.trim()).filter(k => k && !isPillarKeyword(k)).join(',');
+  }
+
+  // ---- 頭痛の専用ページへの内部リンク（頭痛記事は必須。AIが入れ忘れた場合は機械的に補う）----
+  if (headacheTopic || isHeadacheArticle(article, topic)) {
+    const link = ensurePillarLink(article.bodyHtml, article.title);
+    article.bodyHtml = link.bodyHtml;
+    console.log(link.inserted ? '🔗 頭痛の専用ページへの内部リンクを自動挿入' : '🔗 頭痛の専用ページへの内部リンク: 本文に既にあり');
+    if (!hasPillarLink(article.bodyHtml)) throw new Error('頭痛の専用ページへの内部リンクを入れられませんでした');
+  }
+  if (/長岡市\s*(頭痛\s*整体|整体\s*頭痛)/.test(`${article.title}${article.h1Text || ''}`)) {
+    console.log(`⚠️ タイトル/H1が専用ページの狙い語（長岡市 頭痛 整体）と同じ: ${article.title}`);
   }
 
   article.slug = article.slug || slug;
