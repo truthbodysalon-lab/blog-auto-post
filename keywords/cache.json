@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-11T15:56:01.116Z",
+  "updatedAt": "2026-10-18T13:28:32.393Z",
   "totalKeywords": 223,
   "bySymptom": {
     "肩こり": [
@@ -695,7 +695,7 @@
         "score": 81
       },
       {
-        "term": "長岡市 整体+骨盤矯正",
+        "term": "長岡市 整体 骨盤矯正",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
@@ -728,7 +728,7 @@
         "score": 60
       },
       {
-        "term": "長岡 整体 骨盤矯正",
+        "term": "長岡 整体 骨盤 矯正",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
