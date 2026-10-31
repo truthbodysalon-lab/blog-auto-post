@@ -7,6 +7,7 @@ import { generateArticleForTopic } from './generate.js';
 import { generateDailyTopics, appendHistory, recordTopicPosted } from './topics.js';
 import { notify, notifySuccess, notifyError, notifyWarn, writeLog } from './notify.js';
 import { publishGateProblems } from './publish-gate.js';
+import { recordRejection, REJECT_DAYS } from './topic-memory.js';
 
 const MAX_POST_RETRIES = 3;
 const MAX_GEN_RETRIES = 2;
@@ -193,6 +194,11 @@ async function main() {
           failed++;
           failedTitles.push(article.title);
           writeLog('ERROR', `投稿前チェックNGのため投稿しません: ${article.title}`, { problems: gateProblems });
+          // 2026-10-31: タイトル類似で弾かれた話題を覚え、同じ時間帯の再実行で同じ話題を言い換えるだけになるのを防ぐ
+          if (gateProblems.some(p => String(p).includes('タイトル重複'))) {
+            recordRejection(article._topic?.subtopicId);
+            writeLog('INFO', `弾かれた話題を記録（${REJECT_DAYS}日間は候補から外す）: ${article._topic?.subtopicId || '不明'}`);
+          }
           continue;
         }
         const result = await postWithRetry(page, article);

@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { ZUTSU_PILLAR, KATAKORI_PILLAR, isPillarKeyword } from './seo-config.js';
 import { boostedIds, buildRotation } from './seo-priority.js';
+import { chooseFreshest } from './topic-memory.js';
 
 // =====================================
 // コンテンツクラスター定義
@@ -151,7 +152,9 @@ export function pickSubtopicByRotation(coreSymptom, n) {
   if (base.length === 0) return null;
   // 週次の順位計測で「あと一押し（8〜20位）」と出た語は、1周に2回登場させる
   const list = buildRotation(base, boostedIds(coreSymptom));
-  return list[((n % list.length) + list.length) % list.length];
+  // 2026-10-31: 時刻で決まる開始位置から、公開済みで最後に使ったのが最も古い話題を選ぶ（最近弾かれた話題は外す）。
+  // 公開済みの記録（posts/history.json）が無い環境では、従来どおり開始位置のものになる。
+  return chooseFreshest(list, n);
 }
 
 // クラスターの進捗サマリーを生成
