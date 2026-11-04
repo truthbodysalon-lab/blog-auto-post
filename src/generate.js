@@ -360,7 +360,10 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
   if (isDuplicateTitle(article.title) && retryCount < 2) {
     console.log(`⚠️ タイトル類似検出 → 再生成 (${retryCount + 1})`);
     await new Promise(r => setTimeout(r, 1500));
-    return generateArticleForTopic(topic, retryCount + 1);
+    // 2026-11-04: 健康表現ガードの再生成回数と指摘を引き継ぐ（従来は0に戻り、生成回数が最大9回まで膨らんでいた）。
+    // 似たタイトルだったことも次の生成に伝える（伝えないと同じタイトルが出やすい）
+    const dupNote = `${guardNote}\n## 【前回の生成で見つかった問題（必ず直すこと）】\n- タイトル「${article.title}」が過去の投稿と似ている。切り口・語順・言葉選びを変えた別のタイトルにする\n`;
+    return generateArticleForTopic(topic, retryCount + 1, guardRetry, dupNote);
   }
 
   // ---- 健康表現ガード（断定・保証・診断の防止）----
