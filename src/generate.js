@@ -91,6 +91,11 @@ function loadReferenceMaterials() {
   return materials;
 }
 
+// JSTの「今」。getUTC* で読むと、実行環境のタイムゾーンに関係なくJSTの年月日・時刻になる
+function jstNow() {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000);
+}
+
 function toSlug(coreSymptom, angle) {
   const symptomMap = {
     '肩こり': 'katakori', '頭痛': 'zutsu', '姿勢': 'shisei', '骨盤矯正': 'kotsuban',
@@ -102,9 +107,10 @@ function toSlug(coreSymptom, angle) {
     '解剖学解説': 'anatomy', '来店誘導': 'cta',
   };
   // 同じ月に同じ症状×切り口が何度も出るため、日付＋時刻＋乱数で記事ごとに一意にする
-  const d = new Date();
+  // 2026-11-04: GitHub Actions はUTCで動くため、JSTに直してから年月日・時刻を取る
+  const d = jstNow();
   const p2 = (n) => String(n).padStart(2, '0');
-  const stamp = `${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}-${p2(d.getHours())}${p2(d.getMinutes())}`;
+  const stamp = `${d.getUTCFullYear()}${p2(d.getUTCMonth()+1)}${p2(d.getUTCDate())}-${p2(d.getUTCHours())}${p2(d.getUTCMinutes())}`;
   const rand = Math.random().toString(36).slice(2, 5);
   const s = symptomMap[coreSymptom] || 'seitai';
   const a = angleMap[angle] || 'info';
@@ -135,8 +141,9 @@ export async function generateArticleForTopic(topic, retryCount = 0, guardRetry 
   const recentTitles = getRecentTitles(20);
   const slug = toSlug(topic.coreSymptom || topic.symptom, topic.angle);
 
-  const today = new Date();
-  const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+  // 2026-11-04: UTCで動くGitHub Actionsでは JST 7:47〜8:59 の枠で「前日」の日付になっていたため JST で作る
+  const today = jstNow();
+  const dateStr = `${today.getUTCFullYear()}年${today.getUTCMonth()+1}月${today.getUTCDate()}日`;
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   // 無料枠はモデルごとに別々の1日上限。429時に別モデルへ自動フォールバックして枯渇を回避

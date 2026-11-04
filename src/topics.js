@@ -132,15 +132,20 @@ const MONTHLY_SEASONAL = {
   },
 };
 
+// 2026-11-04: GitHub Actions はUTCで動くため、月初の JST 7:47〜8:59 の枠で前月の季節テーマになっていた。JSTの月を使う
+function jstMonth() {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000).getUTCMonth() + 1;
+}
+
 function getMonthSeasonal() {
-  const month = new Date().getMonth() + 1;
+  const month = jstMonth();
   const data = MONTHLY_SEASONAL[month];
   if (!data) return '季節の変わり目';
   return `${data.keyword}（${data.nagaoka}）。トレンド: ${data.trend}`;
 }
 
 export function getMonthlySeasonalData() {
-  const month = new Date().getMonth() + 1;
+  const month = jstMonth();
   return MONTHLY_SEASONAL[month] || { keyword: '季節の変わり目', nagaoka: '長岡市の季節変化', trend: '体調管理' };
 }
 
