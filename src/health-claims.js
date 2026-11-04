@@ -31,6 +31,19 @@ const REPLACEMENTS = [
   [/根本原因/g, '背景', '原因断定'],
   // 百分率の効果断定（「100%」単独）
   [/100\s?[%％]|100パーセント/g, '', '100%'],
+  // 2026-11-04: ホームページの表現ルール「改善」「専門」は使わない（エキテン側 ekiten-generate.js と同じ言い換え）。
+  //  「改善率」は数値実績として BLOCKERS で止めるため言い換えない。
+  [/改善をサポート/g, 'ケアをサポート', '改善'],
+  [/改善(?!率)/g, 'ケア', '改善'],
+  //  医療機関を指す「専門医」「専門機関」「専門外来」は受診のすすめで使うため対象外
+  [/(肩こり|頭痛|腰痛|首こり|姿勢|骨盤)専門の?/g, '$1のご相談が多い', '専門'],
+  [/を専門としています/g, 'を得意としています', '専門'],
+  [/を専門とする/g, 'を得意とする', '専門'],
+  [/を専門とし/g, 'を得意とし', '専門'],
+  [/専門的な/g, '詳しい', '専門'],
+  [/専門的に/g, '詳しく', '専門'],
+  [/専門家/g, 'プロ', '専門'],
+  [/専門(?!医|機関|外来)/g, '得意分野', '専門'],
 ];
 
 // ■ 言い換えで済まない語（残ったら再生成）。[パターン, 理由]
@@ -48,7 +61,7 @@ const BLOCKERS = [
   [/必ず[^。<]{0,15}(改善|良く|よく|楽に|治|効|消え|なくな|軽く|整う|変わ|解消)/, '「必ず」＋効果（保証）'],
   [/(痛み|頭痛|症状|こり)が(消えます|なくなります|無くなります|消える|なくなる)/, '症状が消えるという断定'],
   [/(診断します|診断できます|診断いたします|診断した結果|診断の結果)/, '診断ととれる表現'],
-  [/\bNo\.?\s?1\b|ナンバーワン|地域一番|業界トップ|最高峰/i, '最上級・優位性の断定'],
+  [/\bNo\.?\s?1\b|ナンバーワン|日本一|地域一番|業界トップ|最高峰/i, '最上級・優位性の断定'],
   // 治す系（「〜を治すものではありません」のような否定は許可）
   [/治(す|します|せます|せる)(?![^。<]{0,14}(ない|ません|ではなく|ではありません))/, '「治す」（治療の断定）'],
 ];
@@ -99,6 +112,13 @@ const TEXT_FIELDS = ['title', 'naviName', 'h1Text', 'description', 'keywords', '
  */
 export function sanitizeArticle(article) {
   const applied = new Set();
+  // 2026-11-04: 言い換え前の文に残っていた NG も拾う。「必ず改善」「90%が改善」は
+  //  「改善→ケア」の言い換え後だと BLOCKERS に当たらなくなり、断定・数値実績が素通りするため
+  const before = [];
+  for (const f of TEXT_FIELDS) {
+    if (typeof article[f] !== 'string') continue;
+    for (const b of findBlockers(article[f])) before.push({ field: f, ...b });
+  }
   for (const f of TEXT_FIELDS) {
     if (typeof article[f] !== 'string') continue;
     const r = applyReplacements(article[f]);
@@ -108,7 +128,10 @@ export function sanitizeArticle(article) {
   if (Array.isArray(article.tags)) {
     article.tags = article.tags.map(t => applyReplacements(t).text);
   }
-  return { applied: [...applied], blockers: checkArticle(article) };
+  const after = checkArticle(article);
+  const key = b => `${b.field}|${b.reason}`;
+  const seen = new Set(after.map(key));
+  return { applied: [...applied], blockers: [...after, ...before.filter(b => !seen.has(key(b)))] };
 }
 
 /** 書き換えずに検査だけする（投稿直前のゲート用）。言い換え対象の語が残っていてもNG扱い。 */
