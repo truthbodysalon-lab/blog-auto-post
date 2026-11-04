@@ -95,7 +95,8 @@ async function callWithRetry(prompt, { temperature, maxOutputTokens, responseMim
       const msg         = e.message || '';
       const lower       = msg.toLowerCase();
       const isQuota     = msg.includes('429') || lower.includes('quota');
-      const isBusy      = msg.includes('503') || lower.includes('overloaded') || lower.includes('high demand');
+      // 2026-11-04: 503以外の5xx（500/502/504）も一時障害として扱う
+      const isBusy      = /\b50[0234]\b/.test(msg) || lower.includes('overloaded') || lower.includes('high demand');
       const isGone      = msg.includes('404') || lower.includes('no longer available');
       const isTimeout   = lower.includes('request aborted');
       const isRetryable = isQuota || isBusy || isTimeout;

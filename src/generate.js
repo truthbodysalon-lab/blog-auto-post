@@ -303,10 +303,11 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
       break;
     } catch (e) {
       const isQuota = e.message?.includes('429') || e.message?.toLowerCase().includes('quota');
-      const isRetryable = isQuota || e.message?.includes('503') || e.message?.includes('overloaded');
+      const isRetryable = isQuota || /\b50[0234]\b/.test(e.message || '') || e.message?.includes('overloaded');
       // 1日上限(429)に当たったら、別のモデルへ切替（モデルごとに無料枠が別）
       // 2026-09-20: 503(高負荷)・404(モデル廃止)でも待たずに次のモデルへ切替える（3.8-flashの503で毎日1回失敗していた）
-      const isBusy = e.message?.includes('503') || e.message?.toLowerCase().includes('overloaded') || e.message?.toLowerCase().includes('high demand');
+      // 2026-11-04: 503以外の5xx（500/502/504）も一時障害として次のモデルへ（従来は即失敗していた）
+      const isBusy = /\b50[0234]\b/.test(e.message || '') || e.message?.toLowerCase().includes('overloaded') || e.message?.toLowerCase().includes('high demand');
       const isGone = e.message?.includes('404') || e.message?.toLowerCase().includes('no longer available');
       // タイムアウト（Request aborted）も高負荷と同じ扱いで次のモデルへ
       const isTimeout = e.message?.toLowerCase().includes('request aborted');
