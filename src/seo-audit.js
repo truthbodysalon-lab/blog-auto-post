@@ -34,7 +34,7 @@ async function callGemini(prompt, retries = 3) {
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.5-flash',
     generationConfig: { responseMimeType: 'application/json', temperature: 0.7 },
-  });
+  }, { timeout: 90000 }); // 2026-11-04: 応答が返らないときに止まり続けないよう上限を設ける
 
   for (let i = 1; i <= retries; i++) {
     try {

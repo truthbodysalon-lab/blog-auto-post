@@ -83,6 +83,7 @@ async function fetchSuggestions(seedQuery) {
   const url = `https://suggestqueries.google.com/complete/search?q=${encodeURIComponent(seedQuery)}&client=chrome&hl=ja&gl=jp`;
   const res = await fetch(url, {
     headers: { 'Accept-Language': 'ja-JP,ja;q=0.9' },
+    signal: AbortSignal.timeout(15000), // 2026-11-04: 応答が返らないときに止まり続けないよう上限を設ける
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const buf = await res.arrayBuffer();

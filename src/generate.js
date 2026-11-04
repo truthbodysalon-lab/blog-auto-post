@@ -45,6 +45,8 @@ function sanitizeJsonControlChars(text) {
   return out;
 }
 
+const GEMINI_TIMEOUT_MS = parseInt(process.env.GEMINI_TIMEOUT_MS || '90000', 10);
+
 const MYFILES = '/Users/mt112/Desktop/my files/myfiles';
 
 const SALON_PROFILE = `
@@ -145,10 +147,11 @@ export async function generateArticleForTopic(topic, retryCount = 0, guardRetry 
     'gemini-3.7-flash',
     'gemini-2.5-flash',   // 2026-09-20: 廃止済みの 2.5-flash-lite(404) を外し、実在モデルだけで5段にした
   ].filter((m, i, a) => a.indexOf(m) === i);
+  // 2026-11-04: タイムアウト未指定だと応答が返らないときにジョブ上限(20分)まで止まるため、1回の呼び出しに上限を設ける
   const makeModel = (name) => genAI.getGenerativeModel({
     model: name,
     generationConfig: { responseMimeType: 'application/json', temperature: 0.9 },
-  });
+  }, { timeout: GEMINI_TIMEOUT_MS });
 
   // クラスター情報をプロンプトに注入
   const { kw: targetKw, theme: targetTheme } = resolveTarget(topic);
@@ -305,11 +308,13 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
       // 2026-09-20: 503(高負荷)・404(モデル廃止)でも待たずに次のモデルへ切替える（3.8-flashの503で毎日1回失敗していた）
       const isBusy = e.message?.includes('503') || e.message?.toLowerCase().includes('overloaded') || e.message?.toLowerCase().includes('high demand');
       const isGone = e.message?.includes('404') || e.message?.toLowerCase().includes('no longer available');
-      if ((isQuota || isBusy || isGone) && modelIdx < modelCandidates.length - 1) {
+      // タイムアウト（Request aborted）も高負荷と同じ扱いで次のモデルへ
+      const isTimeout = e.message?.toLowerCase().includes('request aborted');
+      if ((isQuota || isBusy || isGone || isTimeout) && modelIdx < modelCandidates.length - 1) {
         const prev = modelCandidates[modelIdx];
         modelIdx++;
         model = makeModel(modelCandidates[modelIdx]);
-        console.log(`⚠️ ${prev} が ${isQuota ? '枠上限(429)' : isBusy ? '高負荷(503)' : '廃止(404)'} → ${modelCandidates[modelIdx]} に切替えて再試行`);
+        console.log(`⚠️ ${prev} が ${isQuota ? '枠上限(429)' : isBusy ? '高負荷(503)' : isTimeout ? 'タイムアウト' : '廃止(404)'} → ${modelCandidates[modelIdx]} に切替えて再試行`);
         await new Promise(r => setTimeout(r, 2000));
         continue;
       }
