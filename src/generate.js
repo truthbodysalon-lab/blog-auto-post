@@ -45,6 +45,8 @@ function sanitizeJsonControlChars(text) {
   return out;
 }
 
+const GEMINI_TIMEOUT_MS = parseInt(process.env.GEMINI_TIMEOUT_MS || '90000', 10);
+
 const MYFILES = '/Users/mt112/Desktop/my files/myfiles';
 
 const SALON_PROFILE = `
@@ -89,6 +91,11 @@ function loadReferenceMaterials() {
   return materials;
 }
 
+// JSTの「今」。getUTC* で読むと、実行環境のタイムゾーンに関係なくJSTの年月日・時刻になる
+function jstNow() {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000);
+}
+
 function toSlug(coreSymptom, angle) {
   const symptomMap = {
     '肩こり': 'katakori', '頭痛': 'zutsu', '姿勢': 'shisei', '骨盤矯正': 'kotsuban',
@@ -100,9 +107,10 @@ function toSlug(coreSymptom, angle) {
     '解剖学解説': 'anatomy', '来店誘導': 'cta',
   };
   // 同じ月に同じ症状×切り口が何度も出るため、日付＋時刻＋乱数で記事ごとに一意にする
-  const d = new Date();
+  // 2026-11-04: GitHub Actions はUTCで動くため、JSTに直してから年月日・時刻を取る
+  const d = jstNow();
   const p2 = (n) => String(n).padStart(2, '0');
-  const stamp = `${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}-${p2(d.getHours())}${p2(d.getMinutes())}`;
+  const stamp = `${d.getUTCFullYear()}${p2(d.getUTCMonth()+1)}${p2(d.getUTCDate())}-${p2(d.getUTCHours())}${p2(d.getUTCMinutes())}`;
   const rand = Math.random().toString(36).slice(2, 5);
   const s = symptomMap[coreSymptom] || 'seitai';
   const a = angleMap[angle] || 'info';
@@ -133,8 +141,9 @@ export async function generateArticleForTopic(topic, retryCount = 0, guardRetry 
   const recentTitles = getRecentTitles(20);
   const slug = toSlug(topic.coreSymptom || topic.symptom, topic.angle);
 
-  const today = new Date();
-  const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+  // 2026-11-04: UTCで動くGitHub Actionsでは JST 7:47〜8:59 の枠で「前日」の日付になっていたため JST で作る
+  const today = jstNow();
+  const dateStr = `${today.getUTCFullYear()}年${today.getUTCMonth()+1}月${today.getUTCDate()}日`;
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   // 無料枠はモデルごとに別々の1日上限。429時に別モデルへ自動フォールバックして枯渇を回避
@@ -145,10 +154,11 @@ export async function generateArticleForTopic(topic, retryCount = 0, guardRetry 
     'gemini-3.7-flash',
     'gemini-2.5-flash',   // 2026-09-20: 廃止済みの 2.5-flash-lite(404) を外し、実在モデルだけで5段にした
   ].filter((m, i, a) => a.indexOf(m) === i);
+  // 2026-11-04: タイムアウト未指定だと応答が返らないときにジョブ上限(20分)まで止まるため、1回の呼び出しに上限を設ける
   const makeModel = (name) => genAI.getGenerativeModel({
     model: name,
     generationConfig: { responseMimeType: 'application/json', temperature: 0.9 },
-  });
+  }, { timeout: GEMINI_TIMEOUT_MS });
 
   // クラスター情報をプロンプトに注入
   const { kw: targetKw, theme: targetTheme } = resolveTarget(topic);
@@ -178,7 +188,7 @@ ${headacheTopic || /頭痛/.test(`${topic.symptom || ''}`) ? `- ★必須★ 本
 `;
 
   const prompt = `
-あなたはプロのWebライター兼SEO専門家です。
+あなたはSEOに詳しいプロのWebライターです。
 整体院トゥルース（新潟県長岡市）のブログ記事を、以下の【SEO特化7ステップ方式】で作成してください。
 目標: Googleで「${targetKw || (topic.coreSymptom + ' 長岡市')}」検索 **1位獲得**。
 
@@ -252,7 +262,7 @@ ${refs.lpStructure}
 ---
 
 ## 【SEO/MEOルール（絶対遵守）】
-1. **禁止語**: 「治る」「治す」「完治」「治療」(当院の施術について)「絶対」「必ず(効果の保証として)」「100%」「改善率」「確実」「保証」「最高」「No.1」「医学的に証明」「診断します」「原因を特定」「根本原因」「根本改善」
+1. **禁止語**: 「治る」「治す」「完治」「治療」(当院の施術について)「絶対」「必ず(効果の保証として)」「100%」「改善率」「確実」「保証」「最高」「No.1」「日本一」「医学的に証明」「診断します」「原因を特定」「根本原因」「根本改善」「改善」「専門」（「改善」は「ケア」「整える」、「専門」は「ご相談の多い」に言い換える。狙いキーワードに含まれていても本文・タイトルでは使わない）
 1a. **健康表現は断定・保証しない**: 効果は「〜と言われています」「〜の場合があります」「〜を目指します」で書く。「あなたの頭痛は〜が原因です」のように診断ととれる書き方はしない。実績の数値（改善率○%など）は書かない。タイトルでも「整体で楽に！」「〜を解消！」のような効果の言い切りは避ける。競合ページが使っていても真似しない
 1b. **ハッシュタグ禁止**: 本文中に「#○○」「#長岡市」等の#記号ハッシュタグを一切使用しない。SEO・MEO効果はなく投稿品質を下げるため絶対禁止
 2. **推奨語**: 「整える」「サポート」「ケア」「目指す」「体の使い方を見直す」「繰り返しにくい体づくり」
@@ -266,7 +276,7 @@ ${recentTitles.length ? recentTitles.map(t => `   - ${t}`).join('\n') : '   (履
 
 ## 【AIO対策ルール（AI検索最適化・追加遵守）】
 8. **結論ファースト**: ブロック1の最初の1〜2文で検索意図への直接回答を先に述べてから共感フックに続ける。問いかけだけで書き出さない（例:「長岡市で繰り返す肩こりは、背骨の歪みと自律神経の乱れが原因のことが多いです。マッサージに行っても数日で元通り……そんな経験はありませんか？」）
-9. **質問形見出し**: h2見出しのうち最低1つを実際の検索質問文の形にする（例:「長岡市で肩こりに効く整体はどこ？」）。FAQの質問文も検索意図そのままの疑問文にし、回答は2文以内・1文目で結論を述べる
+9. **質問形見出し**: h2見出しのうち最低1つを実際の検索質問文の形にする（例:「長岡市で肩こりに悩んだら整体に相談していい？」。「効く」「治る」など効果を言い切る語は見出しにも使わない）。FAQの質問文も検索意図そのままの疑問文にし、回答は2文以内・1文目で結論を述べる
 10. **定義文**: ブロック2内に「◯◯とは、〜の状態を指します」型の定義文を1文だけ入れる。医学的断定は避け「〜と言われています」等の表現にとどめる
 11. **AI抽出用の要点**: ブロック2に症状セルフチェックの<ul>リスト（2〜4項目）を入れる（ブロック3の<ol>とは別）
 
@@ -300,16 +310,19 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
       break;
     } catch (e) {
       const isQuota = e.message?.includes('429') || e.message?.toLowerCase().includes('quota');
-      const isRetryable = isQuota || e.message?.includes('503') || e.message?.includes('overloaded');
+      const isRetryable = isQuota || /\b50[0234]\b/.test(e.message || '') || e.message?.includes('overloaded');
       // 1日上限(429)に当たったら、別のモデルへ切替（モデルごとに無料枠が別）
       // 2026-09-20: 503(高負荷)・404(モデル廃止)でも待たずに次のモデルへ切替える（3.8-flashの503で毎日1回失敗していた）
-      const isBusy = e.message?.includes('503') || e.message?.toLowerCase().includes('overloaded') || e.message?.toLowerCase().includes('high demand');
+      // 2026-11-04: 503以外の5xx（500/502/504）も一時障害として次のモデルへ（従来は即失敗していた）
+      const isBusy = /\b50[0234]\b/.test(e.message || '') || e.message?.toLowerCase().includes('overloaded') || e.message?.toLowerCase().includes('high demand');
       const isGone = e.message?.includes('404') || e.message?.toLowerCase().includes('no longer available');
-      if ((isQuota || isBusy || isGone) && modelIdx < modelCandidates.length - 1) {
+      // タイムアウト（Request aborted）も高負荷と同じ扱いで次のモデルへ
+      const isTimeout = e.message?.toLowerCase().includes('request aborted');
+      if ((isQuota || isBusy || isGone || isTimeout) && modelIdx < modelCandidates.length - 1) {
         const prev = modelCandidates[modelIdx];
         modelIdx++;
         model = makeModel(modelCandidates[modelIdx]);
-        console.log(`⚠️ ${prev} が ${isQuota ? '枠上限(429)' : isBusy ? '高負荷(503)' : '廃止(404)'} → ${modelCandidates[modelIdx]} に切替えて再試行`);
+        console.log(`⚠️ ${prev} が ${isQuota ? '枠上限(429)' : isBusy ? '高負荷(503)' : isTimeout ? 'タイムアウト' : '廃止(404)'} → ${modelCandidates[modelIdx]} に切替えて再試行`);
         await new Promise(r => setTimeout(r, 2000));
         continue;
       }
@@ -354,7 +367,10 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
   if (isDuplicateTitle(article.title) && retryCount < 2) {
     console.log(`⚠️ タイトル類似検出 → 再生成 (${retryCount + 1})`);
     await new Promise(r => setTimeout(r, 1500));
-    return generateArticleForTopic(topic, retryCount + 1);
+    // 2026-11-04: 健康表現ガードの再生成回数と指摘を引き継ぐ（従来は0に戻り、生成回数が最大9回まで膨らんでいた）。
+    // 似たタイトルだったことも次の生成に伝える（伝えないと同じタイトルが出やすい）
+    const dupNote = `${guardNote}\n## 【前回の生成で見つかった問題（必ず直すこと）】\n- タイトル「${article.title}」が過去の投稿と似ている。切り口・語順・言葉選びを変えた別のタイトルにする\n`;
+    return generateArticleForTopic(topic, retryCount + 1, guardRetry, dupNote);
   }
 
   // ---- 健康表現ガード（断定・保証・診断の防止）----

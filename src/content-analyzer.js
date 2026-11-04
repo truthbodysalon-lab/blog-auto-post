@@ -70,6 +70,7 @@ async function callGemini(prompt, retries = 4) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+        signal: AbortSignal.timeout(90000), // 2026-11-04: 応答が返らないときに止まり続けないよう上限を設ける
       }
     );
     const data = await resp.json();

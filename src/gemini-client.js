@@ -33,6 +33,8 @@ const MAX_ATTEMPTS     = 6;
 const API_WAITS        = [8000, 15000, 25000, 25000, 25000];
 const BAD_OUTPUT_WAIT  = 3000;
 const DEFAULT_MAX_TOKENS = 16384;
+// 1回の呼び出しの上限。未指定だと応答が返らないときにジョブ上限まで止まる（2026-11-04）
+const REQUEST_TIMEOUT_MS = parseInt(process.env.GEMINI_TIMEOUT_MS || '90000', 10);
 
 /**
  * JSONとして解釈する。前後に余計な文字が付いていても中身を拾う。
@@ -65,7 +67,7 @@ async function callWithRetry(prompt, { temperature, maxOutputTokens, responseMim
       thinkingConfig: { thinkingBudget: 0 },
       ...(responseMimeType ? { responseMimeType } : {}),
     },
-  });
+  }, { timeout: REQUEST_TIMEOUT_MS });
 
   // Gemini全滅時の最終段。ANTHROPIC_API_KEY 未設定なら従来どおり元のエラーをそのまま投げる。
   // Claude呼び出しは1回のみ。応答は Gemini と同じ extract（パース・validate）に通す。
@@ -93,14 +95,16 @@ async function callWithRetry(prompt, { temperature, maxOutputTokens, responseMim
       const msg         = e.message || '';
       const lower       = msg.toLowerCase();
       const isQuota     = msg.includes('429') || lower.includes('quota');
-      const isBusy      = msg.includes('503') || lower.includes('overloaded') || lower.includes('high demand');
+      // 2026-11-04: 503以外の5xx（500/502/504）も一時障害として扱う
+      const isBusy      = /\b50[0234]\b/.test(msg) || lower.includes('overloaded') || lower.includes('high demand');
       const isGone      = msg.includes('404') || lower.includes('no longer available');
-      const isRetryable = isQuota || msg.includes('503') || msg.includes('overloaded');
-      if ((isQuota || isBusy || isGone) && modelIdx < candidates.length - 1) {
+      const isTimeout   = lower.includes('request aborted');
+      const isRetryable = isQuota || isBusy || isTimeout;
+      if ((isQuota || isBusy || isGone || isTimeout) && modelIdx < candidates.length - 1) {
         const prev = candidates[modelIdx];
         modelIdx++;
         model = makeModel(candidates[modelIdx]);
-        console.log(`⚠️ ${tag}${prev} が ${isQuota ? '枠上限(429)' : isBusy ? '高負荷(503)' : '廃止(404)'} → ${candidates[modelIdx]} に切替えて再試行`);
+        console.log(`⚠️ ${tag}${prev} が ${isQuota ? '枠上限(429)' : isBusy ? '高負荷(503)' : isTimeout ? 'タイムアウト' : '廃止(404)'} → ${candidates[modelIdx]} に切替えて再試行`);
         await new Promise(r => setTimeout(r, 2000));
         continue;
       }

@@ -107,7 +107,7 @@ const MONTHLY_SEASONAL = {
   },
   8: {
     keyword: '猛暑・夏休み疲れ・お盆明け',
-    nagaoka: '長岡市の花火大会（日本一）後の疲れ、猛暑日が続く時期',
+    nagaoka: '長岡まつり大花火大会の後の疲れ、猛暑日が続く時期',
     trend: '夏休み・お盆明けのリセット疲れ、熱帯夜による睡眠不足と頭痛',
   },
   9: {
@@ -132,15 +132,20 @@ const MONTHLY_SEASONAL = {
   },
 };
 
+// 2026-11-04: GitHub Actions はUTCで動くため、月初の JST 7:47〜8:59 の枠で前月の季節テーマになっていた。JSTの月を使う
+function jstMonth() {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000).getUTCMonth() + 1;
+}
+
 function getMonthSeasonal() {
-  const month = new Date().getMonth() + 1;
+  const month = jstMonth();
   const data = MONTHLY_SEASONAL[month];
   if (!data) return '季節の変わり目';
   return `${data.keyword}（${data.nagaoka}）。トレンド: ${data.trend}`;
 }
 
 export function getMonthlySeasonalData() {
-  const month = new Date().getMonth() + 1;
+  const month = jstMonth();
   return MONTHLY_SEASONAL[month] || { keyword: '季節の変わり目', nagaoka: '長岡市の季節変化', trend: '体調管理' };
 }
 
