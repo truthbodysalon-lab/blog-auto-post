@@ -287,7 +287,7 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
   "h1Text": "40文字以内のh1テキスト（タイトルとは違う表現で・狙いKWを含む）",
   "description": "120〜160文字のメタディスクリプション（狙いKW・長岡市・院名・ベネフィット・行動喚起を明記）",
   "keywords": "カンマ区切り6〜10個（狙いKWを先頭に・例: 長岡市 肩こり 整体,長岡市 肩こり 原因,整体院トゥルース）",
-  "tags": ["既存タグから3〜5個。候補: ${SAMPLE_TAGS.join('、')}"],
+  "tags": [],
   "bodyHtml": "6ブロック構成の本文HTML。2000〜2800文字。FAQ<details>タグ4問を末尾に必ず含める。<h2><h3><p><ul><ol><strong><details><summary>を適切に使用。本文の最末尾にFAQ4問と同内容のFAQPage構造化データを<script type=\\"application/ld+json\\">{\\"@context\\":\\"https://schema.org\\",\\"@type\\":\\"FAQPage\\",\\"mainEntity\\":[...]}</script>として1つ含める（質問・回答はFAQブロックと完全一致させる）"
 }
 `;
@@ -406,6 +406,8 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
   article.slug = slug;  // AIの返したslugは使わない（一意性と英数字のみを保証するため）
   article.category = topic.category;
   article.publishAt = topic.publishAt;
+  // ハッシュタグ禁止（2026-09-25 院長指示）: CMSのタグは「#骨格調整」のように記事ページにハッシュタグ表示されるため、タグは一切付けない
+  article.tags = [];
   console.log(`✅ [${topic.slot}/10] ${article.title}`);
   return article;
 }
