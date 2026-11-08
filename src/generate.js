@@ -7,6 +7,7 @@ import { getRecentTitles, isDuplicateTitle } from './topics.js';
 import { ZUTSU_PILLAR, ZUTSU_PERIPHERAL_FALLBACKS, KATAKORI_PILLAR, KATAKORI_PERIPHERAL_FALLBACKS, isPillarKeyword, isHeadacheArticle, isKatakoriArticle } from './seo-config.js';
 import { ensurePillarLink, hasPillarLink, ensureKatakoriLink, hasKatakoriLink } from './internal-links.js';
 import { sanitizeArticle } from './health-claims.js';
+import { reactionPromptBlock } from './reaction-context.js';
 
 /**
  * JSON文字列リテラル内に混入した生の制御文字（改行・タブ等）だけをエスケープする。
@@ -177,6 +178,10 @@ ${headacheTopic || /頭痛/.test(`${topic.symptom || ''}`) ? `- ★必須★ 本
   例: 「頭痛全般についての詳しい情報は、<a href="${ZUTSU_PILLAR.url}">${ZUTSU_PILLAR.anchors[0]}</a>もあわせてご覧ください。」（href は上のURLを一字一句そのまま使う）` : `- この記事で頭痛に触れる場合は、本文の自然な位置に頭痛の専用ページへのリンクを1本入れる: <a href="${ZUTSU_PILLAR.url}">${ZUTSU_PILLAR.anchors[0]}</a>`}
 `;
 
+  // 自社サイトの実測で反応が良かった記事の型（データが無い日は空文字）
+  let reactionCtx = '';
+  try { reactionCtx = reactionPromptBlock(topic); } catch { reactionCtx = ''; }
+
   const prompt = `
 あなたはプロのWebライター兼SEO専門家です。
 整体院トゥルース（新潟県長岡市）のブログ記事を、以下の【SEO特化7ステップ方式】で作成してください。
@@ -192,7 +197,7 @@ ${clusterCtx}
 - 切り口: ${topic.angle}（${topic.angleDesc}）
 - 想定読者: ${topic.lifestyle}
 - 季節・トレンド: ${topic.seasonal}（現在 ${dateStr}）
-${pillarCtx}${katakoriCtx}${guardNote}
+${pillarCtx}${katakoriCtx}${reactionCtx}${guardNote}
 ---
 
 ## 【参考: 患者の実際の悩み】

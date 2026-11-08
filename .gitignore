@@ -7,3 +7,7 @@ logs/
 cron.log
 debug-*.png
 *.log
+
+# 自社サイトのアクセス実測（公開リポジトリに出さない）
+keywords/cms-reactions.json
+rankings/cms-reactions-latest.md

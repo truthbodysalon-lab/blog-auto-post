@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { getNextSubtopic, recordSubtopicCovered, getClusterProgress, pickSubtopicByRotation } from './content-clusters.js';
 import { isPillarKeyword } from './seo-config.js';
+import { pickReactionTopic } from './reaction-context.js';
 
 const HISTORY_FILE = path.resolve('posts/history.json');
 const KEYWORD_CACHE_FILE = path.resolve('keywords/cache.json');
@@ -295,7 +296,7 @@ export function generateDailyTopics(count = 10, opts = {}) {
     const { core, variant } = symptomQueue[i];
     const slotIdx = (clock.slotIdx + i) % DAY_PLAN.length;
     const occ = occurrenceNumber(core, clock.dayIndex, slotIdx);
-    const angle = useClock
+    let angle = useClock
       ? ANGLES[(occ * 3 + slotIdx) % ANGLES.length]
       : pickAngleWithStrategy(ANGLES, usedAngles, strategy);
     const lifestyle = useClock
@@ -328,6 +329,27 @@ export function generateDailyTopics(count = 10, opts = {}) {
     }
     if (isPillarKeyword(symptomVariant)) symptomVariant = subtopicTheme || (core === '肩こり' ? '肩こりの原因・セルフケア・生活習慣' : '頭痛の種類・セルフケア・季節');
 
+    // 反応型の枠（頭痛の枠）: 自社サイトで反応が良かった「身近な題材×頭痛」の型で書く。
+    // keywords/cms-reactions.json が無い・古い日は何もしない（従来どおり）
+    let reactionSlot = false;
+    try {
+      const headacheOrdinal = DAY_PLAN.slice(0, slotIdx).filter(c => c === '頭痛').length;
+      const rx = pickReactionTopic(core, { dayIndex: clock.dayIndex, headacheOrdinal, history: loadHistory(), now: opts.now || new Date() });
+      if (rx) {
+        subtopicKeyword = rx.keyword;
+        subtopicTheme = rx.theme;
+        subtopicId = null; // クラスターの巡回には数えない
+        symptomVariant = rx.theme;
+        reactionSlot = true;
+        // 手本の記事はすべて「疑問に答える解説」型。作り話の体験談（事例ストーリー）や来店誘導の切り口は使わない
+        const rxAngles = ANGLES.filter(a => ['原因解説', 'Q&A形式', 'セルフケア', '失敗談・落とし穴', '解剖学解説'].includes(a.name));
+        angle = rxAngles[(clock.dayIndex + headacheOrdinal) % rxAngles.length];
+        console.log(`🔥 反応型の枠: ${rx.label}（狙い: ${rx.keyword}）`);
+      }
+    } catch (e) {
+      console.warn(`⚠️ 反応型の枠の選定に失敗（従来どおり）: ${e.message}`);
+    }
+
     usedAngles.push(angle.name);
     usedLifestyles.push(lifestyle);
     if (usedAngles.length >= ANGLES.length) usedAngles.length = 0;
@@ -353,6 +375,7 @@ export function generateDailyTopics(count = 10, opts = {}) {
       subtopicKeyword,
       subtopicTheme,
       subtopicId,
+      reactionSlot,
     });
   }
 
