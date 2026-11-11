@@ -10,7 +10,7 @@ import { publishGateProblems } from './publish-gate.js';
 import { recordRejection, REJECT_DAYS } from './topic-memory.js';
 
 const MAX_POST_RETRIES = 3;
-const MAX_GEN_RETRIES = 2;
+const MAX_GEN_RETRIES = 3; // 2026-11-11: 2→3・待ちを30秒単位に（通信の一時障害で全件失敗が続いた）
 
 function formatPublishAt(hour, minute) {
   const pad = n => String(n).padStart(2, '0');
@@ -42,7 +42,7 @@ async function generateWithRetry(topic) {
     } catch (e) {
       writeLog('WARN', `記事生成失敗 (試行${attempt}/${MAX_GEN_RETRIES})`, { slot: topic.slot, error: e.message });
       if (attempt === MAX_GEN_RETRIES) throw e;
-      await new Promise(r => setTimeout(r, 6000 * attempt));
+      await new Promise(r => setTimeout(r, 30000 * attempt));
     }
   }
 }

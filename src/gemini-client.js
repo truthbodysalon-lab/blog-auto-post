@@ -29,8 +29,22 @@ const MODEL_CANDIDATES = [
   'gemini-3.1-flash-lite',
 ];
 
-const MAX_ATTEMPTS     = 6;
-const API_WAITS        = [8000, 15000, 25000, 25000, 25000];
+const MAX_ATTEMPTS     = 9;   // 2026-11-11: 6→9。モデル切替で試行を使い切ってから通信の一時障害に当たると即失敗していた
+const API_WAITS        = [8000, 15000, 25000, 40000, 60000];
+
+/**
+ * 通信の一時切断・サーバー側の一時エラーか（待てば直る類）。
+ * 2026-11-11: 「fetch failed」をやり直さずに即失敗にしていたため「記事生成が全件失敗」が続いた。
+ */
+export function isTransientNetworkError(e) {
+  const msg = String(e?.message || '') + ' ' + String(e?.cause?.code || e?.cause?.message || '');
+  const lower = msg.toLowerCase();
+  return lower.includes('fetch failed') || lower.includes('econnreset') || lower.includes('etimedout')
+    || lower.includes('econnrefused') || lower.includes('enotfound') || lower.includes('eai_again')
+    || lower.includes('socket hang up') || lower.includes('network') || lower.includes('und_err')
+    || /\[(500|502|504)\b/.test(msg) || lower.includes('internal error') || lower.includes('bad gateway')
+    || lower.includes('gateway timeout') || lower.includes('deadline');
+}
 const BAD_OUTPUT_WAIT  = 3000;
 const DEFAULT_MAX_TOKENS = 16384;
 
@@ -95,7 +109,7 @@ async function callWithRetry(prompt, { temperature, maxOutputTokens, responseMim
       const isQuota     = msg.includes('429') || lower.includes('quota');
       const isBusy      = msg.includes('503') || lower.includes('overloaded') || lower.includes('high demand');
       const isGone      = msg.includes('404') || lower.includes('no longer available');
-      const isRetryable = isQuota || msg.includes('503') || msg.includes('overloaded');
+      const isRetryable = isQuota || isTransientNetworkError(e) || msg.includes('503') || msg.includes('overloaded');
       if ((isQuota || isBusy || isGone) && modelIdx < candidates.length - 1) {
         const prev = candidates[modelIdx];
         modelIdx++;

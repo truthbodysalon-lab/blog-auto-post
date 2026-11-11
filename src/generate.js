@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { isAnthropicAvailable, generateWithClaude } from './anthropic-fallback.js';
+import { isTransientNetworkError } from './gemini-client.js';
 import { getRecentTitles, isDuplicateTitle } from './topics.js';
 import { ZUTSU_PILLAR, ZUTSU_PERIPHERAL_FALLBACKS, KATAKORI_PILLAR, KATAKORI_PERIPHERAL_FALLBACKS, isPillarKeyword, isHeadacheArticle, isKatakoriArticle } from './seo-config.js';
 import { ensurePillarLink, hasPillarLink, ensureKatakoriLink, hasKatakoriLink } from './internal-links.js';
@@ -299,13 +300,18 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
   let result;
   let modelIdx = 0;
   let model = makeModel(modelCandidates[modelIdx]);
-  for (let attempt = 1; attempt <= 6; attempt++) {
+  // 2026-11-11: 「fetch failed」（通信の一時切断）や 500/502/504 をやり直さずに即失敗にしていたため、
+  // 「slot記事生成失敗 → 全件失敗」が続いていた（Grok側の実行・11/9〜11/11にHPブログ0本の一因）。
+  // 一時的な通信・サーバーエラーは同じモデルで待ってやり直す。モデル切替で試行を使い切らないよう上限も9回に増やす。
+  const MAX_TRIES = 9;
+  for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
     try {
       result = await model.generateContent(prompt);
       break;
     } catch (e) {
       const isQuota = e.message?.includes('429') || e.message?.toLowerCase().includes('quota');
-      const isRetryable = isQuota || e.message?.includes('503') || e.message?.includes('overloaded');
+      const isTransient = isTransientNetworkError(e);
+      const isRetryable = isQuota || isTransient || e.message?.includes('503') || e.message?.includes('overloaded');
       // 1日上限(429)に当たったら、別のモデルへ切替（モデルごとに無料枠が別）
       // 2026-09-20: 503(高負荷)・404(モデル廃止)でも待たずに次のモデルへ切替える（3.8-flashの503で毎日1回失敗していた）
       const isBusy = e.message?.includes('503') || e.message?.toLowerCase().includes('overloaded') || e.message?.toLowerCase().includes('high demand');
@@ -318,9 +324,9 @@ JSON形式のみで出力。JSON以外の文字（説明文・コードブロッ
         await new Promise(r => setTimeout(r, 2000));
         continue;
       }
-      if (isRetryable && attempt < 6) {
-        const wait = [8000, 15000, 25000, 25000, 25000][attempt - 1] || 25000;
-        console.log(`⏳ API一時エラー (試行${attempt}/6)、${wait/1000}秒後にリトライ...`);
+      if (isRetryable && attempt < MAX_TRIES) {
+        const wait = [8000, 15000, 25000, 40000, 60000][attempt - 1] || 60000;
+        console.log(`⏳ API一時エラー${isTransient ? '（通信）' : ''} (試行${attempt}/${MAX_TRIES})、${wait/1000}秒後にリトライ...`);
         await new Promise(r => setTimeout(r, wait));
       } else throw e;
     }
