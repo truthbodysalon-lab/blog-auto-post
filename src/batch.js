@@ -180,6 +180,9 @@ async function main() {
   const page = await context.newPage();
   let success = 0;
   let failed = 0;
+  // 2026-11-13: 投稿前チェック（類似タイトル等）で見送った件数。failed にも含める（rc=1 で Recovery が別の話題で投稿し直すため）。
+  // 見送りは設計どおりの安全装置なので、これだけが理由の「全件失敗」は Discord に ❌ を出さない（10/26〜11/13 に毎日誤報が続いた）。
+  let gateSkipped = 0;
   const failedTitles = [];
 
   try {
@@ -192,6 +195,7 @@ async function main() {
         const gateProblems = publishGateProblems(article);
         if (gateProblems.length) {
           failed++;
+          gateSkipped++;
           failedTitles.push(article.title);
           writeLog('ERROR', `投稿前チェックNGのため投稿しません: ${article.title}`, { problems: gateProblems });
           // 2026-10-31: タイトル類似で弾かれた話題を覚え、同じ時間帯の再実行で同じ話題を言い換えるだけになるのを防ぐ
@@ -239,8 +243,15 @@ async function main() {
   const summary = `投稿完了 ✅${success}件 / ❌${failed}件 (${elapsed}秒)`;
   writeLog('INFO', `=== 終了: ${summary} ===`);
 
+  // 投稿そのものの失敗（ゲート見送りを除く）
+  const postFailed = failed - gateSkipped;
   if (failed === 0) {
     await notifySuccess(`ブログ自動投稿 ${summary}`);
+  } else if (postFailed === 0) {
+    // 投稿前チェックの見送りだけ: 通知しない（ログのみ）。rc=1 は残し、呼び出し側（run_blog.sh の Recovery・
+    // grokbot-fallback の blog_fill・box 側の health）が別の話題で補う／本数不足として検出する。
+    writeLog('WARN', `ブログ自動投稿 投稿前チェックで見送り ${gateSkipped}件（設計どおり・Discord通知なし） ${summary}\n見送り: ${failedTitles.join(' / ')}`);
+    if (success === 0) process.exitCode = 1;
   } else if (success > 0) {
     await notifyWarn(`ブログ自動投稿 ${summary}\n失敗: ${failedTitles.join(' / ')}`);
   } else {
