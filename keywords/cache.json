@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-08T16:13:18.988Z",
+  "updatedAt": "2026-11-15T16:34:17.369Z",
   "totalKeywords": 223,
   "bySymptom": {
     "肩こり": [
@@ -206,18 +206,6 @@
         "score": 56
       },
       {
-        "term": "肩こり 整体 マッサージ",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete",
-          "aramaki"
-        ],
-        "volume": 64,
-        "isLocal": false,
-        "isTarget": true,
-        "score": 27
-      },
-      {
         "term": "肩こり 整体 整骨院",
         "coreSymptom": "肩こり",
         "sources": [
@@ -225,6 +213,18 @@
           "aramaki"
         ],
         "volume": 34,
+        "isLocal": false,
+        "isTarget": true,
+        "score": 24
+      },
+      {
+        "term": "肩こり 整体 マッサージ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete",
+          "aramaki"
+        ],
+        "volume": 28,
         "isLocal": false,
         "isTarget": true,
         "score": 24
