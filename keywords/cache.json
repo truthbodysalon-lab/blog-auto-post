@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-11-15T16:34:17.369Z",
-  "totalKeywords": 223,
+  "updatedAt": "2026-11-22T17:19:41.359Z",
+  "totalKeywords": 225,
   "bySymptom": {
     "肩こり": [
       {
@@ -28,170 +28,15 @@
         "score": 81
       },
       {
-        "term": "長岡市 肩こり おすすめ",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 肩こり 治療",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 肩こり マッサージ",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
         "term": "長岡市 肩こり 整体",
         "coreSymptom": "肩こり",
         "sources": [
-          "autocomplete"
+          "anchor"
         ],
         "volume": 0,
         "isLocal": true,
         "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "肩こり頭痛改善専門 整体院トゥルース 長岡市 レビュー",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡 市 肩こり マッサージ",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 肩こり 頭痛",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟 市 整体 肩こり",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟 肩こり マッサージ",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟 肩こり おすすめ",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟 肩こり 整形外科",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟 肩こり 整体",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete",
-          "aramaki"
-        ],
-        "volume": 2,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟県 整体 人気",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 整体 肩こり",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡 市 肩こり 頭痛",
-        "coreSymptom": "肩こり",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
+        "score": 56
       },
       {
         "term": "長岡市 肩こり",
@@ -206,28 +51,181 @@
         "score": 56
       },
       {
-        "term": "肩こり 整体 整骨院",
+        "term": "新潟 肩こり 整体",
         "coreSymptom": "肩こり",
         "sources": [
-          "autocomplete",
+          "anchor",
           "aramaki"
         ],
-        "volume": 34,
-        "isLocal": false,
+        "volume": 2,
+        "isLocal": true,
         "isTarget": true,
-        "score": 24
+        "score": 56
       },
       {
-        "term": "肩こり 整体 マッサージ",
+        "term": "髟ｷ蟯｡蟶� 閧ｩ縺薙ｊ 縺翫☆縺吶ａ",
         "coreSymptom": "肩こり",
         "sources": [
-          "autocomplete",
-          "aramaki"
+          "autocomplete"
         ],
-        "volume": 28,
+        "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 24
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 閧ｩ縺薙ｊ 豐ｻ逋�",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 閧ｩ縺薙ｊ 繝槭ャ繧ｵ繝ｼ繧ｸ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 閧ｩ縺薙ｊ 謨ｴ菴�",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "閧ｩ縺薙ｊ鬆ｭ逞帶隼蝟�ｰる摩 謨ｴ菴馴劼繝医ぇ繝ｫ繝ｼ繧ｹ 髟ｷ蟯｡蟶� 繝ｬ繝薙Η繝ｼ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡ 蟶� 閧ｩ縺薙ｊ 繝槭ャ繧ｵ繝ｼ繧ｸ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 閧ｩ縺薙ｊ 鬆ｭ逞�",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 蟶� 謨ｴ菴� 閧ｩ縺薙ｊ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 閧ｩ縺薙ｊ 繝槭ャ繧ｵ繝ｼ繧ｸ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 閧ｩ縺薙ｊ 縺翫☆縺吶ａ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 閧ｩ縺薙ｊ 謨ｴ蠖｢螟也ｧ�",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 閧ｩ縺薙ｊ 謨ｴ菴�",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎溽恁 謨ｴ菴� 莠ｺ豌�",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "閧ｩ縺薙ｊ 謨ｴ菴� 謨ｴ鬪ｨ髯｢",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "閧ｩ縺薙ｊ 謨ｴ菴� 繝槭ャ繧ｵ繝ｼ繧ｸ",
+        "coreSymptom": "肩こり",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
       }
     ],
     "頭痛": [
@@ -244,172 +242,27 @@
         "score": 81
       },
       {
-        "term": "長岡市 頭痛外来",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete",
-          "aramaki"
-        ],
-        "volume": 6,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 61
-      },
-      {
-        "term": "長岡市 頭痛 専門医",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete",
-          "aramaki"
-        ],
-        "volume": 6,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 61
-      },
-      {
         "term": "新潟 頭痛 整体",
         "coreSymptom": "頭痛",
         "sources": [
-          "autocomplete",
+          "anchor",
           "aramaki"
         ],
         "volume": 6,
         "isLocal": true,
         "isTarget": true,
-        "score": 61
+        "score": 57
       },
       {
         "term": "長岡市 頭痛 整体",
         "coreSymptom": "頭痛",
         "sources": [
-          "autocomplete"
+          "anchor"
         ],
         "volume": 0,
         "isLocal": true,
         "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 気圧 頭痛",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 頭痛 医者",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 頭痛 内科",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡 整体 頭痛",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡 市 整体 マッサージ",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 頭痛専門医",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟 頭痛 専門 こはく 整体 院",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟 市 頭痛 整体",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟 頭痛 専門",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟県 頭痛専門医",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "頭痛 整体 院 新潟",
-        "coreSymptom": "頭痛",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
+        "score": 56
       },
       {
         "term": "長岡市 頭痛",
@@ -447,15 +300,158 @@
         "score": 31
       },
       {
-        "term": "肩凝り 頭痛 整体",
+        "term": "髟ｷ蟯｡蟶� 鬆ｭ逞帛､匁擂",
         "coreSymptom": "頭痛",
         "sources": [
           "autocomplete"
         ],
         "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 21
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 鬆ｭ逞� 蟆る摩蛹ｻ",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 鬆ｭ逞� 謨ｴ菴�",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 豌怜悸 鬆ｭ逞�",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 鬆ｭ逞� 蛹ｻ閠�",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 鬆ｭ逞� 蜀�ｧ�",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡ 謨ｴ菴� 鬆ｭ逞�",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 謨ｴ菴� 閧ｩ縺薙ｊ",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡ 蟶� 謨ｴ菴� 繝槭ャ繧ｵ繝ｼ繧ｸ",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡蟶� 鬆ｭ逞帛ｰる摩蛹ｻ",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡ 蟶� 閧ｩ縺薙ｊ 鬆ｭ逞�",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 鬆ｭ逞� 蟆る摩 縺薙�縺� 謨ｴ菴� 髯｢",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 蟶� 鬆ｭ逞� 謨ｴ菴�",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 鬆ｭ逞� 蟆る摩",
+        "coreSymptom": "頭痛",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
       }
     ],
     "姿勢": [
@@ -472,213 +468,213 @@
         "score": 63
       },
       {
-        "term": "新潟 市 整体 姿勢 矯正",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡 市 姿勢 改善",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "長岡 姿勢矯正",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "長岡 市 猫背 矯正",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "長岡 市 猫背",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "長岡 猫背 矯正",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "新潟 姿勢 矯正",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "新潟 姿勢 改善",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "新潟 市 姿勢 矯正",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "猫背 矯正 長岡",
-        "coreSymptom": "姿勢",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "巻き肩 改善 整体 東京",
+        "term": "髟ｷ蟯｡ 蟶� 蟋ｿ蜍｢ 謾ｹ蝟�",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
         ],
         "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 21
+        "isTarget": false,
+        "score": 2
       },
       {
-        "term": "巻き肩改善 整体 大阪",
+        "term": "髟ｷ蟯｡ 蟋ｿ蜍｢遏ｯ豁｣",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
         ],
         "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 21
+        "isTarget": false,
+        "score": 2
       },
       {
-        "term": "ストレートネック 整体 整骨どっち",
+        "term": "髟ｷ蟯｡ 蟶� 迪ｫ閭� 遏ｯ豁｣",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
         ],
         "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 21
+        "isTarget": false,
+        "score": 2
       },
       {
-        "term": "ストレートネック 整体で治る",
+        "term": "髟ｷ蟯｡ 蟶� 迪ｫ閭�",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
         ],
         "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 21
+        "isTarget": false,
+        "score": 2
       },
       {
-        "term": "ストレートネック 整体 治らない",
+        "term": "髟ｷ蟯｡ 迪ｫ閭� 遏ｯ豁｣",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
         ],
         "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 21
+        "isTarget": false,
+        "score": 2
       },
       {
-        "term": "ストレートネック 整体 整骨 どっち 知恵袋",
+        "term": "譁ｰ貎� 蟶� 謨ｴ菴� 蟋ｿ蜍｢ 遏ｯ豁｣",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
         ],
         "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 21
+        "isTarget": false,
+        "score": 2
       },
       {
-        "term": "ストレートネック 整体 東京",
+        "term": "譁ｰ貎� 蟋ｿ蜍｢ 遏ｯ豁｣",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
         ],
         "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 21
+        "isTarget": false,
+        "score": 2
       },
       {
-        "term": "ストレートネック 整体 おすすめ",
+        "term": "譁ｰ貎� 蟋ｿ蜍｢ 謾ｹ蝟�",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
         ],
         "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 21
+        "isTarget": false,
+        "score": 2
       },
       {
-        "term": "ストレートネック 整体 大阪",
+        "term": "譁ｰ貎� 蟶� 蟋ｿ蜍｢ 遏ｯ豁｣",
         "coreSymptom": "姿勢",
         "sources": [
           "autocomplete"
         ],
         "volume": 0,
         "isLocal": false,
-        "isTarget": true,
-        "score": 21
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "迪ｫ閭� 遏ｯ豁｣ 髟ｷ蟯｡",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "蟾ｻ縺崎か 謾ｹ蝟� 謨ｴ菴� 譚ｱ莠ｬ",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "蟾ｻ縺崎か謾ｹ蝟� 謨ｴ菴� 螟ｧ髦ｪ",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "繧ｹ繝医Ξ繝ｼ繝医ロ繝�け 謨ｴ菴� 謨ｴ鬪ｨ縺ｩ縺｣縺｡",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "繧ｹ繝医Ξ繝ｼ繝医ロ繝�け 謨ｴ菴薙〒豐ｻ繧�",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "繧ｹ繝医Ξ繝ｼ繝医ロ繝�け 謨ｴ菴� 豐ｻ繧峨↑縺�",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "繧ｹ繝医Ξ繝ｼ繝医ロ繝�け 謨ｴ菴� 謨ｴ鬪ｨ 縺ｩ縺｣縺｡ 遏･諱ｵ陲�",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "繧ｹ繝医Ξ繝ｼ繝医ロ繝�け 謨ｴ菴� 譚ｱ莠ｬ",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "繧ｹ繝医Ξ繝ｼ繝医ロ繝�け 謨ｴ菴� 縺翫☆縺吶ａ",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "繧ｹ繝医Ξ繝ｼ繝医ロ繝�け 謨ｴ菴� 螟ｧ髦ｪ",
+        "coreSymptom": "姿勢",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
       }
     ],
     "骨盤矯正": [
@@ -695,138 +691,6 @@
         "score": 81
       },
       {
-        "term": "長岡市 整体 骨盤矯正",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 産後 整体",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "新潟 整体 骨盤 矯正",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡 整体 骨盤 矯正",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": true,
-        "score": 60
-      },
-      {
-        "term": "長岡市 骨盤矯正 産後",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "長岡市 骨盤矯正 おすすめ",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "長岡 市 骨盤 矯正 産後",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "新潟 骨盤矯正 人気",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "新潟 骨盤矯正 安い",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "新潟 骨盤矯正 おすすめ",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "骨盤矯正 長岡 おすすめ",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
-        "term": "骨盤 矯正 長岡 市",
-        "coreSymptom": "骨盤矯正",
-        "sources": [
-          "autocomplete"
-        ],
-        "volume": 0,
-        "isLocal": true,
-        "isTarget": false,
-        "score": 35
-      },
-      {
         "term": "産後 骨盤矯正",
         "coreSymptom": "骨盤矯正",
         "sources": [
@@ -838,7 +702,7 @@
         "score": 16
       },
       {
-        "term": "産後 骨盤矯正 いつから",
+        "term": "髟ｷ蟯｡蟶� 鬪ｨ逶､遏ｯ豁｣ 逕｣蠕�",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
@@ -849,7 +713,7 @@
         "score": 2
       },
       {
-        "term": "産後 骨盤矯正 意味ない",
+        "term": "髟ｷ蟯｡蟶� 鬪ｨ逶､遏ｯ豁｣ 縺翫☆縺吶ａ",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
@@ -860,7 +724,7 @@
         "score": 2
       },
       {
-        "term": "産後 骨盤矯正 ストレッチ",
+        "term": "髟ｷ蟯｡蟶� 謨ｴ菴� 鬪ｨ逶､遏ｯ豁｣",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
@@ -871,7 +735,7 @@
         "score": 2
       },
       {
-        "term": "産後 骨盤矯正 ガードル",
+        "term": "髟ｷ蟯｡ 蟶� 鬪ｨ逶､ 遏ｯ豁｣ 逕｣蠕�",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
@@ -882,7 +746,7 @@
         "score": 2
       },
       {
-        "term": "産後 骨盤矯正 保険適用",
+        "term": "髟ｷ蟯｡蟶� 逕｣蠕� 謨ｴ菴�",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
@@ -893,7 +757,139 @@
         "score": 2
       },
       {
-        "term": "産後 骨盤矯正 ベルト",
+        "term": "譁ｰ貎� 鬪ｨ逶､遏ｯ豁｣ 莠ｺ豌�",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 鬪ｨ逶､遏ｯ豁｣ 螳峨＞",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 鬪ｨ逶､遏ｯ豁｣ 縺翫☆縺吶ａ",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "譁ｰ貎� 謨ｴ菴� 鬪ｨ逶､ 遏ｯ豁｣",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "髟ｷ蟯｡ 謨ｴ菴� 鬪ｨ逶､ 遏ｯ豁｣",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "鬪ｨ逶､遏ｯ豁｣ 髟ｷ蟯｡ 縺翫☆縺吶ａ",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "鬪ｨ逶､ 遏ｯ豁｣ 髟ｷ蟯｡ 蟶�",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "逕｣蠕� 鬪ｨ逶､遏ｯ豁｣ 縺�▽縺九ｉ",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "逕｣蠕� 鬪ｨ逶､遏ｯ豁｣ 諢丞袖縺ｪ縺�",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "逕｣蠕� 鬪ｨ逶､遏ｯ豁｣ 繧ｹ繝医Ξ繝�メ",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "逕｣蠕� 鬪ｨ逶､遏ｯ豁｣ 繧ｬ繝ｼ繝峨Ν",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "逕｣蠕� 鬪ｨ逶､遏ｯ豁｣ 菫晞匱驕ｩ逕ｨ",
+        "coreSymptom": "骨盤矯正",
+        "sources": [
+          "autocomplete"
+        ],
+        "volume": 0,
+        "isLocal": false,
+        "isTarget": false,
+        "score": 2
+      },
+      {
+        "term": "逕｣蠕� 鬪ｨ逶､遏ｯ豁｣ 繝吶Ν繝�",
         "coreSymptom": "骨盤矯正",
         "sources": [
           "autocomplete"
